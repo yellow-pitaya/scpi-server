@@ -7,6 +7,7 @@ mod ieee;
 mod scpi;
 mod general;
 mod digital;
+mod analog;
 
 use std::io::prelude::*;
 
@@ -18,6 +19,7 @@ enum Command {
     Scpi(::scpi::Command),
     General(::general::Command),
     Digital(::digital::Command),
+    Analog(::analog::Command),
 }
 
 impl ::std::convert::From<String> for Command {
@@ -30,6 +32,9 @@ impl ::std::convert::From<String> for Command {
         }
         else if s.starts_with("DIG:") {
             Command::Digital(s.into())
+        }
+        else if s.starts_with("ANALOG:") {
+            Command::Analog(s.into())
         }
         else {
             Command::Scpi(s.into())
@@ -104,6 +109,7 @@ fn execute(command: Command, args: Vec<String>) -> Result {
         Command::Scpi(command) => ::scpi::execute(command, args),
         Command::General(command) => ::general::execute(command, args),
         Command::Digital(command) => ::digital::execute(command, args),
+        Command::Analog(command) => ::analog::execute(command, args),
     }
 }
 
