@@ -11,11 +11,25 @@ use std::io::prelude::*;
 
 type Result = ::std::result::Result<Option<String>, String>;
 
+#[derive(Debug)]
 enum Command {
     Ieee(::ieee::Command),
     Scpi(::scpi::Command),
     General(::general::Command),
-    Error(String),
+}
+
+impl ::std::convert::From<String> for Command {
+    fn from(s: String) -> Self {
+        if s.starts_with("*") {
+            Command::Ieee(s.into())
+        }
+        else if s.starts_with("RP:") {
+            Command::General(s.into())
+        }
+        else {
+            Command::Scpi(s.into())
+        }
+    }
 }
 
 fn main() {
@@ -53,7 +67,9 @@ fn handle_client(mut stream: ::std::net::TcpStream) {
 
     reader.read_line(&mut message)
         .unwrap();
+    debug!("> {}", message);
     let (command, args) = parse_message(message);
+    info!("{:?} {:?}", command, args);
 
     match execute(command, args) {
         Ok(result) => if let Some(response) = result {
@@ -74,24 +90,7 @@ fn parse_message(command: String) -> (Command, Vec<String>) {
 
     let command = args.remove(0);
 
-    info!("> {}", command);
-    match command.as_str() {
-        /* ieee */
-        "*IDN?" => (Command::Ieee(::ieee::Command::Idn), args),
-
-        /* scpi */
-        "ECHO?" => (Command::Scpi(::scpi::Command::Echo), args),
-        "ECO:VERSION?" => (Command::Scpi(::scpi::Command::Version), args),
-
-        /* general */
-        "RP:INit" => (Command::General(::general::Command::Init), args),
-        "RP:REset" => (Command::General(::general::Command::Reset), args),
-        "RP:RELease" => (Command::General(::general::Command::Release), args),
-        "RP:FPGABITREAM" => (Command::General(::general::Command::FpgaBitstream), args),
-        "RP:DIg[:loop]" => (Command::General(::general::Command::EnableDigLoop), args),
-
-        _ => (Command::Error(format!("Unknow command '{}'", command)), args),
-    }
+    (command.into(), args)
 }
 
 fn execute(command: Command, args: Vec<String>) -> Result {
@@ -99,7 +98,6 @@ fn execute(command: Command, args: Vec<String>) -> Result {
         Command::Ieee(command) => ::ieee::execute(command, args),
         Command::Scpi(command) => ::scpi::execute(command, args),
         Command::General(command) => ::general::execute(command, args),
-        Command::Error(message) => Err(message),
     }
 }
 

@@ -1,9 +1,25 @@
+#[derive(Debug)]
 pub enum Command {
     Init,
     Reset,
     Release,
     FpgaBitstream,
     EnableDigLoop,
+    Unknow,
+}
+
+impl ::std::convert::From<String> for Command {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "RP:INit" => ::general::Command::Init,
+            "RP:REset" => ::general::Command::Reset,
+            "RP:RELease" => ::general::Command::Release,
+            "RP:FPGABITREAM" => ::general::Command::FpgaBitstream,
+            "RP:DIg" => ::general::Command::EnableDigLoop,
+            "RP:DIg:loop" => ::general::Command::EnableDigLoop,
+            _ => Command::Unknow,
+        }
+    }
 }
 
 pub fn execute(command: Command, args: Vec<String>) -> ::Result {
@@ -13,6 +29,7 @@ pub fn execute(command: Command, args: Vec<String>) -> ::Result {
         Command::Release => release(),
         Command::FpgaBitstream => fpga_bitstream(args),
         Command::EnableDigLoop => enable_dig_loop(),
+        Command::Unknow => Err(String::from("Unknow command")),
     }
 }
 
