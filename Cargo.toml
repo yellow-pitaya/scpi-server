@@ -1,0 +1,9 @@
+[package]
+name = "scpi-server"
+version = "0.1.0"
+authors = ["Sanpi <sanpi@homecomputing.fr>"]
+
+[dependencies]
+env_logger = "0.3"
+log = "0.3"
+redpitaya = "0.10"
