@@ -3,14 +3,16 @@ extern crate redpitaya;
 extern crate log;
 extern crate env_logger;
 
-mod scpi;
 mod ieee;
+mod scpi;
+mod general;
 
 use std::io::prelude::*;
 
 enum Command {
     Ieee(::ieee::Command),
     Scpi(::scpi::Command),
+    General(::general::Command),
     Error,
 }
 
@@ -75,6 +77,13 @@ fn parse_message(command: String) -> (Command, Vec<String>) {
         "ECHO?" => (Command::Scpi(::scpi::Command::Echo), args),
         "ECO:VERSION?" => (Command::Scpi(::scpi::Command::Version), args),
 
+        /* general */
+        "RP:INit" => (Command::General(::general::Command::Init), args),
+        "RP:REset" => (Command::General(::general::Command::Reset), args),
+        "RP:RELease" => (Command::General(::general::Command::Release), args),
+        "RP:FPGABITREAM" => (Command::General(::general::Command::FpgaBitstream), args),
+        "RP:DIg[:loop]" => (Command::General(::general::Command::EnableDigLoop), args),
+
         _ => {
             error!("Unknow command '{}'", command);
 
@@ -87,6 +96,7 @@ fn exec(command: Command, args: Vec<String>) -> Option<String> {
     match command {
         Command::Ieee(command) => ::ieee::execute(command, args),
         Command::Scpi(command) => ::scpi::execute(command, args),
+        Command::General(command) => ::general::execute(command, args),
         Command::Error => error(),
     }
 }
