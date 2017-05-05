@@ -19,12 +19,12 @@ pub fn execute(command: Command, _: Vec<String>) -> ::Result {
     match command {
         Command::Echo => echo(),
         Command::Version => version(),
-        Command::Unknow => Err(String::from("Unknow command")),
+        Command::Unknow => Err("Unknow command".to_owned()),
     }
 }
 
 fn echo() -> ::Result {
-    Ok(Some(String::from("ECHO?")))
+    Ok(Some("ECHO?".to_owned()))
 }
 
 fn version() -> ::Result {

@@ -29,7 +29,7 @@ pub fn execute(command: Command, args: Vec<String>) -> ::Result {
         Command::Release => release(),
         Command::FpgaBitstream => fpga_bitstream(args),
         Command::EnableDigLoop => enable_dig_loop(),
-        Command::Unknow => Err(String::from("Unknow command")),
+        Command::Unknow => Err("Unknow command".to_owned()),
     }
 }
 
@@ -57,7 +57,7 @@ fn release() -> ::Result {
 fn fpga_bitstream(args: Vec<String>) -> ::Result {
     let version = match args.get(0) {
         Some(version) => version,
-        None => return Err(String::from("Missing argument")),
+        None => return Err("Missing argument".to_owned()),
     };
 
     let bitstream = format!("/opt/redpitaya/fpga/fpga_{}.bit", version);

@@ -6,6 +6,7 @@ extern crate env_logger;
 mod ieee;
 mod scpi;
 mod general;
+mod digital;
 
 use std::io::prelude::*;
 
@@ -16,6 +17,7 @@ enum Command {
     Ieee(::ieee::Command),
     Scpi(::scpi::Command),
     General(::general::Command),
+    Digital(::digital::Command),
 }
 
 impl ::std::convert::From<String> for Command {
@@ -25,6 +27,9 @@ impl ::std::convert::From<String> for Command {
         }
         else if s.starts_with("RP:") {
             Command::General(s.into())
+        }
+        else if s.starts_with("DIG:") {
+            Command::Digital(s.into())
         }
         else {
             Command::Scpi(s.into())
@@ -77,7 +82,7 @@ fn handle_client(mut stream: ::std::net::TcpStream) {
         },
         Err(error) => {
             error!("{}", error);
-            write(&mut stream, String::from("ERR!"));
+            write(&mut stream, "ERR!".to_owned());
         },
     };
 }
@@ -85,7 +90,7 @@ fn handle_client(mut stream: ::std::net::TcpStream) {
 fn parse_message(command: String) -> (Command, Vec<String>) {
     let mut args: Vec<String> = command.replace("\r\n", "")
         .split_whitespace()
-        .map(|s| String::from(s))
+        .map(|s| s.to_owned())
         .collect();
 
     let command = args.remove(0);
@@ -98,6 +103,7 @@ fn execute(command: Command, args: Vec<String>) -> Result {
         Command::Ieee(command) => ::ieee::execute(command, args),
         Command::Scpi(command) => ::scpi::execute(command, args),
         Command::General(command) => ::general::execute(command, args),
+        Command::Digital(command) => ::digital::execute(command, args),
     }
 }
 

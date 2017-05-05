@@ -18,7 +18,7 @@ impl ::std::convert::From<String> for Command {
 pub fn execute(command: Command, _: Vec<String>) -> ::Result {
     match command {
         Command::Idn => idn(),
-        Command::Unknow => Err(String::from("Unknow command")),
+        Command::Unknow => Err("Unknow command".to_owned()),
     }
 }
 
