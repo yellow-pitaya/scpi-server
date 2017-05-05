@@ -9,10 +9,9 @@ mod ieee;
 use std::io::prelude::*;
 
 enum Command {
-    Idn,
-    Echo,
+    Ieee(::ieee::Command),
+    Scpi(::scpi::Command),
     Error,
-    Version,
 }
 
 fn main() {
@@ -69,9 +68,13 @@ fn parse_message(command: String) -> (Command, Vec<String>) {
 
     info!("> {}", command);
     match command.as_str() {
-        "*IDN?" => (Command::Idn, args),
-        "ECHO?" => (Command::Echo, args),
-        "ECO:VERSION?" => (Command::Version, args),
+        /* ieee */
+        "*IDN?" => (Command::Ieee(::ieee::Command::Idn), args),
+
+        /* scpi */
+        "ECHO?" => (Command::Scpi(::scpi::Command::Echo), args),
+        "ECO:VERSION?" => (Command::Scpi(::scpi::Command::Version), args),
+
         _ => {
             error!("Unknow command '{}'", command);
 
@@ -82,10 +85,9 @@ fn parse_message(command: String) -> (Command, Vec<String>) {
 
 fn exec(command: Command, args: Vec<String>) -> Option<String> {
     match command {
-        Command::Idn => ::ieee::idn(),
-        Command::Echo => ::scpi::echo(),
+        Command::Ieee(command) => ::ieee::execute(command, args),
+        Command::Scpi(command) => ::scpi::execute(command, args),
         Command::Error => error(),
-        Command::Version => ::scpi::version(),
     }
 }
 
