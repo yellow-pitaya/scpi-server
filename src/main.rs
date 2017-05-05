@@ -67,8 +67,12 @@ fn handle_client(mut stream: ::std::net::TcpStream) {
 }
 
 fn parse_message(command: String) -> (Command, Vec<String>) {
-    let args = Vec::new();
-    let command = command.replace("\r\n", "");
+    let mut args: Vec<String> = command.replace("\r\n", "")
+        .split_whitespace()
+        .map(|s| String::from(s))
+        .collect();
+
+    let command = args.remove(0);
 
     info!("> {}", command);
     match command.as_str() {
