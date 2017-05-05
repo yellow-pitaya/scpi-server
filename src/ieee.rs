@@ -4,12 +4,12 @@ pub enum Command {
     Idn,
 }
 
-pub fn execute(command: Command, _: Vec<String>) -> Option<String> {
+pub fn execute(command: Command, _: Vec<String>) -> ::Result {
     match command {
         Command::Idn => idn(),
     }
 }
 
-fn idn() -> Option<String> {
-    Some(IDN.join(","))
+fn idn() -> ::Result {
+    Ok(Some(IDN.join(",")))
 }

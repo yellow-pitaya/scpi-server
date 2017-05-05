@@ -9,11 +9,13 @@ mod general;
 
 use std::io::prelude::*;
 
+type Result = ::std::result::Result<Option<String>, String>;
+
 enum Command {
     Ieee(::ieee::Command),
     Scpi(::scpi::Command),
     General(::general::Command),
-    Error,
+    Error(String),
 }
 
 fn main() {
@@ -53,14 +55,14 @@ fn handle_client(mut stream: ::std::net::TcpStream) {
         .unwrap();
     let (command, args) = parse_message(message);
 
-    match exec(command, args) {
-        Some(response) => {
-            info!("< {}", response);
-
-            stream.write(format!("{}\r\n", response).as_bytes())
-                .unwrap();
+    match execute(command, args) {
+        Ok(result) => if let Some(response) = result {
+            write(&mut stream, response);
         },
-        None => (),
+        Err(error) => {
+            error!("{}", error);
+            write(&mut stream, String::from("ERR!"));
+        },
     };
 }
 
@@ -84,23 +86,22 @@ fn parse_message(command: String) -> (Command, Vec<String>) {
         "RP:FPGABITREAM" => (Command::General(::general::Command::FpgaBitstream), args),
         "RP:DIg[:loop]" => (Command::General(::general::Command::EnableDigLoop), args),
 
-        _ => {
-            error!("Unknow command '{}'", command);
-
-            (Command::Error, args)
-        },
+        _ => (Command::Error(format!("Unknow command '{}'", command)), args),
     }
 }
 
-fn exec(command: Command, args: Vec<String>) -> Option<String> {
+fn execute(command: Command, args: Vec<String>) -> Result {
     match command {
         Command::Ieee(command) => ::ieee::execute(command, args),
         Command::Scpi(command) => ::scpi::execute(command, args),
         Command::General(command) => ::general::execute(command, args),
-        Command::Error => error(),
+        Command::Error(message) => Err(message),
     }
 }
 
-fn error() -> Option<String> {
-    Some(String::from("ERR!"))
+fn write(stream: &mut ::std::net::TcpStream, response: String) {
+    info!("< {}", response);
+
+    stream.write(format!("{}\r\n", response).as_bytes())
+        .unwrap();
 }
