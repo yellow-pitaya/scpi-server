@@ -8,6 +8,7 @@ mod scpi;
 mod general;
 mod digital;
 mod analog;
+mod acquire;
 mod server;
 
 type Result = ::std::result::Result<Option<String>, String>;

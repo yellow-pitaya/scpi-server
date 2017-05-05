@@ -8,6 +8,7 @@ pub enum Command {
     General(::general::Command),
     Digital(::digital::Command),
     Analog(::analog::Command),
+    Acquire(::acquire::Command),
     Error(String),
 }
 
@@ -25,6 +26,9 @@ impl ::std::convert::From<String> for Command {
         else if ::analog::Module::accept(s.clone()) {
             Command::Analog(s.into())
         }
+        else if ::acquire::Module::accept(s.clone()) {
+            Command::Acquire(s.into())
+        }
         else if ::scpi::Module::accept(s.clone()) {
             Command::Scpi(s.into())
         }
@@ -40,6 +44,7 @@ pub struct Server {
     general: ::general::Module,
     digital: ::digital::Module,
     analog: ::analog::Module,
+    acquire: ::acquire::Module,
 }
 
 impl ::Module for Server {
@@ -52,6 +57,7 @@ impl ::Module for Server {
             general: ::general::Module::new(),
             digital: ::digital::Module::new(),
             analog: ::analog::Module::new(),
+            acquire: ::acquire::Module::new(),
         }
     }
 
@@ -66,6 +72,7 @@ impl ::Module for Server {
             Command::General(command) => self.general.execute(command, args),
             Command::Digital(command) => self.digital.execute(command, args),
             Command::Analog(command) => self.analog.execute(command, args),
+            Command::Acquire(command) => self.acquire.execute(command, args),
             Command::Error(message) => Err(message),
         }
     }
