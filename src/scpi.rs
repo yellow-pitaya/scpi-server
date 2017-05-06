@@ -8,25 +8,34 @@ pub enum Command {
 impl ::std::convert::From<String> for Command {
     fn from(s: String) -> Self {
         match s.as_str() {
-            "ECHO?" => ::scpi::Command::Echo,
-            "ECO:VERSION?" => ::scpi::Command::Version,
+            "ECHO?" => Command::Echo,
+            "ECO:VERSION?" => Command::Version,
             _ => Command::Unknow,
         }
     }
 }
 
-pub fn execute(command: Command, _: Vec<String>) -> ::Result {
-    match command {
-        Command::Echo => echo(),
-        Command::Version => version(),
-        Command::Unknow => Err("Unknow command".to_owned()),
+pub struct Module {
+}
+
+impl ::Module for Module {
+    type Command = Command;
+
+    fn execute(command: Self::Command, _: Vec<String>) -> ::Result {
+        match command {
+            Command::Echo => Self::echo(),
+            Command::Version => Self::version(),
+            Command::Unknow => Err("Unknow command".to_owned()),
+        }
     }
 }
 
-fn echo() -> ::Result {
-    Ok(Some("ECHO?".to_owned()))
-}
+impl Module {
+    fn echo() -> ::Result {
+        Ok(Some("ECHO?".to_owned()))
+    }
 
-fn version() -> ::Result {
-    Ok(Some(::redpitaya::get_version()))
+    fn version() -> ::Result {
+        Ok(Some(::redpitaya::get_version()))
+    }
 }

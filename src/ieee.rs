@@ -15,13 +15,22 @@ impl ::std::convert::From<String> for Command {
     }
 }
 
-pub fn execute(command: Command, _: Vec<String>) -> ::Result {
-    match command {
-        Command::Idn => idn(),
-        Command::Unknow => Err("Unknow command".to_owned()),
+pub struct Module {
+}
+
+impl ::Module for Module {
+    type Command = Command;
+
+    fn execute(command: Self::Command, _: Vec<String>) -> ::Result {
+        match command {
+            Command::Idn => Self::idn(),
+            Command::Unknow => Err("Unknow command".to_owned()),
+        }
     }
 }
 
-fn idn() -> ::Result {
-    Ok(Some(IDN.join(",")))
+impl Module {
+    fn idn() -> ::Result {
+        Ok(Some(IDN.join(",")))
+    }
 }

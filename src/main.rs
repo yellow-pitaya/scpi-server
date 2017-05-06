@@ -13,6 +13,12 @@ use std::io::prelude::*;
 
 type Result = ::std::result::Result<Option<String>, String>;
 
+trait Module {
+    type Command: ::std::convert::From<String>;
+
+    fn execute(command: Self::Command, args: Vec<String>) -> ::Result;
+}
+
 #[derive(Debug)]
 enum Command {
     Ieee(::ieee::Command),
@@ -105,11 +111,11 @@ fn parse_message(command: String) -> (Command, Vec<String>) {
 
 fn execute(command: Command, args: Vec<String>) -> Result {
     match command {
-        Command::Ieee(command) => ::ieee::execute(command, args),
-        Command::Scpi(command) => ::scpi::execute(command, args),
-        Command::General(command) => ::general::execute(command, args),
-        Command::Digital(command) => ::digital::execute(command, args),
-        Command::Analog(command) => ::analog::execute(command, args),
+        Command::Ieee(command) => ::ieee::Module::execute(command, args),
+        Command::Scpi(command) => ::scpi::Module::execute(command, args),
+        Command::General(command) => ::general::Module::execute(command, args),
+        Command::Digital(command) => ::digital::Module::execute(command, args),
+        Command::Analog(command) => ::analog::Module::execute(command, args),
     }
 }
 
