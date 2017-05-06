@@ -27,6 +27,10 @@ pub struct Module {
 impl ::Module for Module {
     type Command = Command;
 
+    fn accept(command: String) -> bool {
+        command.starts_with("DIG:")
+    }
+
     fn execute(command: Command, args: Vec<String>) -> ::Result {
         match command {
             Command::Reset => Self::reset(args),

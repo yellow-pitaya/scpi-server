@@ -16,6 +16,7 @@ type Result = ::std::result::Result<Option<String>, String>;
 trait Module {
     type Command: ::std::convert::From<String>;
 
+    fn accept(command: String) -> bool;
     fn execute(command: Self::Command, args: Vec<String>) -> ::Result;
 }
 
@@ -26,24 +27,28 @@ enum Command {
     General(::general::Command),
     Digital(::digital::Command),
     Analog(::analog::Command),
+    Error(String),
 }
 
 impl ::std::convert::From<String> for Command {
     fn from(s: String) -> Self {
-        if s.starts_with("*") {
+        if ::ieee::Module::accept(s.clone()) {
             Command::Ieee(s.into())
         }
-        else if s.starts_with("RP:") {
+        else if ::general::Module::accept(s.clone()) {
             Command::General(s.into())
         }
-        else if s.starts_with("DIG:") {
+        else if ::digital::Module::accept(s.clone()) {
             Command::Digital(s.into())
         }
-        else if s.starts_with("ANALOG:") {
+        else if ::analog::Module::accept(s.clone()) {
             Command::Analog(s.into())
         }
-        else {
+        else if ::scpi::Module::accept(s.clone()) {
             Command::Scpi(s.into())
+        }
+        else {
+            Command::Error(format!("Unknow command {}", s))
         }
     }
 }
@@ -116,6 +121,7 @@ fn execute(command: Command, args: Vec<String>) -> Result {
         Command::General(command) => ::general::Module::execute(command, args),
         Command::Digital(command) => ::digital::Module::execute(command, args),
         Command::Analog(command) => ::analog::Module::execute(command, args),
+        Command::Error(message) => Err(message),
     }
 }
 
