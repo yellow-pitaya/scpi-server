@@ -15,8 +15,9 @@ type Result = ::std::result::Result<Option<String>, String>;
 trait Module {
     type Command: ::std::convert::From<String>;
 
+    fn new() -> Self;
     fn accept(command: String) -> bool;
-    fn execute(command: Self::Command, args: Vec<String>) -> ::Result;
+    fn execute(&mut self, command: Self::Command, args: Vec<String>) -> ::Result;
 }
 
 fn main() {

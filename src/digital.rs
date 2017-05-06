@@ -27,11 +27,16 @@ pub struct Module {
 impl ::Module for Module {
     type Command = Command;
 
+    fn new() -> Self {
+        Module {
+        }
+    }
+
     fn accept(command: String) -> bool {
         command.starts_with("DIG:")
     }
 
-    fn execute(command: Command, args: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Command, args: Vec<String>) -> ::Result {
         match command {
             Command::Reset => Self::reset(args),
             Command::PinState => Self::set_pin_state(args),

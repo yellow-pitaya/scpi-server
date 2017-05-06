@@ -28,11 +28,16 @@ pub struct Module {
 impl ::Module for Module {
     type Command = Command;
 
+    fn new() -> Self {
+        Module {
+        }
+    }
+
     fn accept(command: String) -> bool {
         command.starts_with("RP:")
     }
 
-    fn execute(command: Command, args: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Command, args: Vec<String>) -> ::Result {
         match command {
             Command::Init => Self::init(),
             Command::Reset => Self::reset(),

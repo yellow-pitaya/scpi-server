@@ -21,11 +21,16 @@ pub struct Module {
 impl ::Module for Module {
     type Command = Command;
 
+    fn new() -> Self {
+        Module {
+        }
+    }
+
     fn accept(command: String) -> bool {
         command.starts_with("*")
     }
 
-    fn execute(command: Self::Command, _: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Self::Command, _: Vec<String>) -> ::Result {
         match command {
             Command::Idn => Self::idn(),
             Command::Unknow => Err("Unknow command".to_owned()),

@@ -21,11 +21,16 @@ pub struct Module {
 impl ::Module for Module {
     type Command = Command;
 
+    fn new() -> Self {
+        Module {
+        }
+    }
+
     fn accept(_: String) -> bool {
         true
     }
 
-    fn execute(command: Self::Command, _: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Self::Command, _: Vec<String>) -> ::Result {
         match command {
             Command::Echo => Self::echo(),
             Command::Version => Self::version(),
