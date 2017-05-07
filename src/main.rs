@@ -9,6 +9,7 @@ mod general;
 mod digital;
 mod analog;
 mod acquire;
+mod generator;
 mod server;
 
 type Result = ::std::result::Result<Option<String>, String>;
