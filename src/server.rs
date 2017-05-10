@@ -136,12 +136,23 @@ impl Server {
     }
 
     fn parse_message(&self, command: String) -> (Command, Vec<String>) {
-        let mut args: Vec<String> = command.replace("\r\n", "")
+        let args: Vec<String> = command.replace("\r\n", "")
             .split_whitespace()
             .map(|s| s.to_owned())
             .collect();
 
-        let command = args.remove(0);
+        let command = args.get(0)
+            .unwrap()
+            .clone();
+
+        let args = match args.get(1) {
+            Some(args) => {
+                args.split(',')
+                    .map(|s| s.to_owned())
+                    .collect()
+            },
+            None => Vec::new(),
+        };
 
         (command.into(), args)
     }
