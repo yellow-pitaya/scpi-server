@@ -9,7 +9,7 @@ pub enum Command {
 impl ::std::convert::From<String> for Command {
     fn from(s: String) -> Self {
         match s.as_str() {
-            "DIG:RST" => Command::Reset,
+            "ANALOG:RST" => Command::Reset,
             "ANALOG:PIN" => Command::PinValue,
             "ANALOG:PIN?" => Command::PinValueQuery,
             _ => Command::Unknow,
