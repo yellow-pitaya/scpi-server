@@ -15,6 +15,8 @@ pub enum Command {
 
 impl ::std::convert::From<String> for Command {
     fn from(s: String) -> Self {
+        let s = s.to_uppercase();
+
         if ::ieee::Module::accept(s.clone()) {
             Command::Ieee(s.into())
         }

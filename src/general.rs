@@ -11,12 +11,11 @@ pub enum Command {
 impl ::std::convert::From<String> for Command {
     fn from(s: String) -> Self {
         match s.as_str() {
-            "RP:INit" => ::general::Command::Init,
-            "RP:REset" => ::general::Command::Reset,
-            "RP:RELease" => ::general::Command::Release,
+            "RP:INIT" => ::general::Command::Init,
+            "RP:RESET" => ::general::Command::Reset,
+            "RP:RELEASE" => ::general::Command::Release,
             "RP:FPGABITREAM" => ::general::Command::FpgaBitstream,
-            "RP:DIg" => ::general::Command::EnableDigLoop,
-            "RP:DIg:loop" => ::general::Command::EnableDigLoop,
+            "RP:DIG" | "RP:DIG:LOOP" => ::general::Command::EnableDigLoop,
             _ => Command::Unknow,
         }
     }
