@@ -86,7 +86,7 @@ impl ::Module for Server {
 }
 
 impl Server {
-    pub fn launch(&mut self) {
+    pub fn launch() {
         let listener = ::std::net::TcpListener::bind("0.0.0.0:5000")
             .unwrap();
 
@@ -102,11 +102,12 @@ impl Server {
             debug!("New client");
             match stream {
                 Ok(stream) => {
-                    // @FIXME
-                    //::std::thread::spawn(move || {
-                        self.handle_client(stream);
+                    ::std::thread::spawn(move || {
+                        let mut server = Self::new();
+
+                        server.handle_client(stream);
                         debug!("Client served");
-                    //});
+                    });
                 },
                 Err(e) => error!("failed: {}", e),
             }
@@ -119,7 +120,7 @@ impl Server {
 
         reader.read_line(&mut message)
             .unwrap();
-        debug!("> {}", message);
+        debug!("> {:?}", message);
         let (command, args) = self.parse_message(message);
         info!("{:?} {:?}", command, args);
 

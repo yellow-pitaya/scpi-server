@@ -26,6 +26,5 @@ fn main() {
     ::env_logger::init()
         .unwrap();
 
-    ::server::Server::new()
-        .launch();
+    ::server::Server::launch();
 }
