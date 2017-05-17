@@ -143,9 +143,10 @@ impl Server {
             .map(|s| s.to_owned())
             .collect();
 
-        let command = args.get(0)
-            .unwrap()
-            .clone();
+        let command = match args.get(0) {
+            Some(command) => command.clone(),
+            None => return (Command::Error("Empty command".to_owned()), Vec::new()),
+        };
 
         let args = match args.get(1) {
             Some(args) => {
