@@ -97,7 +97,7 @@ impl ::Module for Module {
 
     fn new() -> Self {
         Module {
-            unit: "VOLT".to_owned(),
+            unit: "VOLTS".to_owned(),
             binary_output: false,
         }
     }
@@ -194,7 +194,7 @@ impl Module {
 
     fn set_average(&self, args: Vec<String>) -> ::Result {
         let average = match args.get(0) {
-            Some(average) => average.as_str() == "1",
+            Some(average) => average.as_str() == "ON",
             None => return Err("Missing parameter".to_owned()),
         };
 
@@ -206,7 +206,7 @@ impl Module {
 
     fn get_average(&self) -> ::Result {
         let averaging = match ::redpitaya::acquire::get_averaging() {
-            Ok(averaging) => if averaging { "1" } else { "0" },
+            Ok(averaging) => if averaging { "ON" } else { "OFF" },
             Err(err) => return Err(err),
         };
 
@@ -226,9 +226,15 @@ impl Module {
     }
 
     fn get_trigger_source(&self) -> ::Result {
-        match ::redpitaya::acquire::get_trigger_src() {
-            Ok(source) => Ok(Some(source.into())),
-            Err(err) => Err(err),
+        let state = match ::redpitaya::acquire::get_trigger_src() {
+            Ok(source) => source,
+            Err(err) => return Err(err),
+        };
+
+        if state == ::redpitaya::acquire::TrigSrc::RP_TRIG_SRC_DISABLED {
+            Ok(Some("TD".into()))
+        } else {
+            Ok(Some("WAIT".into()))
         }
     }
 
@@ -290,8 +296,8 @@ impl Module {
     }
 
     fn set_gain(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
-        let gain = match args.get(1) {
-            Some(gain) => gain.parse::<u8>().unwrap().into(),
+        let gain = match args.get(0) {
+            Some(gain) => gain.clone().into(),
             None => return Err("Missing parameter".to_owned()),
         };
 
@@ -303,26 +309,25 @@ impl Module {
 
     fn get_gain(&self, channel: ::redpitaya::Channel) -> ::Result {
         match ::redpitaya::acquire::get_gain(channel) {
-            Ok(gain) => Ok(Some(format!("{}", ::std::convert::Into::<u8>::into(gain)))),
+            Ok(gain) => Ok(Some(gain.into())),
             Err(err) => Err(err),
         }
     }
 
     fn set_trigger_level(&self, args: Vec<String>) -> ::Result {
-        let channel = match args.get(0) {
-            Some(channel) => channel.clone().into(),
-            None => return Err("Missing parameter".to_owned()),
-        };
-
-        let level = match args.get(1) {
+        let level = match args.get(0) {
             Some(level) => level.clone().parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match ::redpitaya::acquire::set_trigger_level(channel, level) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(err),
+        for channel in [::redpitaya::Channel::RP_CH_1, ::redpitaya::Channel::RP_CH_2].iter() {
+            match ::redpitaya::acquire::set_trigger_level(*channel, level) {
+                Ok(_) => (),
+                Err(err) => return Err(err),
+            }
         }
+
+        Ok(None)
     }
 
     fn get_trigger_level(&self) -> ::Result {
@@ -375,12 +380,12 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        let end = match args.get(0) {
+        let end = match args.get(1) {
             Some(end) => end.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
         };
 
-        if self.unit == "VOLT" {
+        if self.unit == "VOLTS" {
             match ::redpitaya::acquire::get_data_pos_v(channel, start, end) {
                 Ok(data) => self.format_data(data),
                 Err(err) => Err(err),
@@ -400,12 +405,12 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        let size = match args.get(0) {
+        let size = match args.get(1) {
             Some(end) => end.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
         };
 
-        if self.unit == "VOLT" {
+        if self.unit == "VOLTS" {
             match ::redpitaya::acquire::get_data_v(channel, start, size) {
                 Ok(data) => self.format_data(data),
                 Err(err) => Err(err),
@@ -425,7 +430,7 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        if self.unit == "VOLT" {
+        if self.unit == "VOLTS" {
             match ::redpitaya::acquire::get_oldest_data_v(channel, size) {
                 Ok(data) => self.format_data(data),
                 Err(err) => Err(err),
@@ -457,7 +462,7 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        if self.unit == "VOLT" {
+        if self.unit == "VOLTS" {
             match ::redpitaya::acquire::get_latest_data_v(channel, size) {
                 Ok(data) => self.format_data(data),
                 Err(err) => Err(err),

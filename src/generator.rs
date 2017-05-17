@@ -51,7 +51,7 @@ impl ::std::convert::From<String> for Command {
             channel = ::redpitaya::Channel::RP_CH_1;
             command.replace("OUTPUT1:", "OUTPUT#:")
         }
-        else if command.contains("OUTPUT1:") {
+        else if command.contains("OUTPUT2:") {
             channel = ::redpitaya::Channel::RP_CH_2;
             command.replace("OUTPUT2:", "OUTPUT#:")
         }
@@ -163,7 +163,7 @@ impl Module {
             ::redpitaya::generator::out_enable(channel)
         }
         else {
-            ::redpitaya::generator::out_enable(channel)
+            ::redpitaya::generator::out_disable(channel)
         };
 
         match result {

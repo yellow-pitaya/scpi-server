@@ -86,13 +86,13 @@ impl Module {
     }
 
     fn set_pin_direction(args: Vec<String>) -> ::Result {
-        let pin = match args.get(0) {
-            Some(pin) => pin.clone().into(),
+        let direction = match args.get(0) {
+            Some(direction) => direction.clone().into(),
             None => return Err("Missing parameter".to_owned()),
         };
 
-        let direction = match args.get(1) {
-            Some(direction) => direction.clone().into(),
+        let pin = match args.get(1) {
+            Some(pin) => pin.clone().into(),
             None => return Err("Missing parameter".to_owned()),
         };
 

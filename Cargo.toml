@@ -6,4 +6,4 @@ authors = ["Sanpi <sanpi@homecomputing.fr>"]
 [dependencies]
 env_logger = "0.4"
 log = "0.3"
-redpitaya = "0.18"
+redpitaya = "0.23"
