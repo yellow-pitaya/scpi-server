@@ -1,3 +1,32 @@
+static mut UNIT: Units = Units::Volts;
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum Units {
+    Volts,
+    Raw,
+    Unknow,
+}
+
+impl ::std::convert::From<String> for Units {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "VOLTS" => Units::Volts,
+            "RAW" => Units::Raw,
+            _ => Units::Unknow,
+        }
+    }
+}
+
+impl ::std::convert::Into<String> for Units {
+    fn into(self) -> String {
+        match self {
+            Units::Volts => "VOLTS",
+            Units::Raw => "RAW",
+            Units::Unknow => unimplemented!(),
+        }.to_owned()
+    }
+}
+
 #[derive(Debug)]
 pub enum Command {
     Start,
@@ -88,7 +117,6 @@ impl ::std::convert::From<String> for Command {
 }
 
 pub struct Module {
-    unit: String,
     binary_output: bool,
 }
 
@@ -97,7 +125,6 @@ impl ::Module for Module {
 
     fn new() -> Self {
         Module {
-            unit: "VOLTS".to_owned(),
             binary_output: false,
         }
     }
@@ -353,16 +380,18 @@ impl Module {
 
 
     fn set_data_units(&mut self, args: Vec<String>) -> ::Result {
-        self.unit = match args.get(0) {
-            Some(unit) => unit.clone().into(),
+        let unit = match args.get(0) {
+            Some(arg) => arg.clone().into(),
             None => return Err("Missing parameter".to_owned()),
         };
+
+        Self::set_unit(unit);
 
         Ok(None)
     }
 
     fn get_data_units(&self) -> ::Result {
-        Ok(Some(self.unit.clone()))
+        Ok(Some(Self::get_unit().into()))
     }
 
     fn set_data_format(&mut self, args: Vec<String>) -> ::Result {
@@ -385,7 +414,7 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        if self.unit == "VOLTS" {
+        if Self::get_unit() == Units::Volts {
             match ::redpitaya::acquire::get_data_pos_v(channel, start, end) {
                 Ok(data) => self.format_data(data),
                 Err(err) => Err(err),
@@ -410,7 +439,7 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        if self.unit == "VOLTS" {
+        if Self::get_unit() == Units::Volts {
             match ::redpitaya::acquire::get_data_v(channel, start, size) {
                 Ok(data) => self.format_data(data),
                 Err(err) => Err(err),
@@ -430,7 +459,7 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        if self.unit == "VOLTS" {
+        if Self::get_unit() == Units::Volts {
             match ::redpitaya::acquire::get_oldest_data_v(channel, size) {
                 Ok(data) => self.format_data(data),
                 Err(err) => Err(err),
@@ -462,7 +491,7 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        if self.unit == "VOLTS" {
+        if Self::get_unit() == Units::Volts {
             match ::redpitaya::acquire::get_latest_data_v(channel, size) {
                 Ok(data) => self.format_data(data),
                 Err(err) => Err(err),
@@ -498,6 +527,18 @@ impl Module {
                 });
 
             Ok(Some(format!("{{{}}}", s.trim_right_matches(','))))
+        }
+    }
+
+    fn get_unit() -> Units {
+        unsafe {
+            UNIT
+        }
+    }
+
+    fn set_unit(unit: Units) {
+        unsafe {
+            UNIT = unit
         }
     }
 }
