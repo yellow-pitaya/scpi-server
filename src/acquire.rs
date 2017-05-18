@@ -1,4 +1,5 @@
 static mut UNIT: Units = Units::Volts;
+static mut FORMAT: Formats = Formats::Ascii;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Units {
@@ -23,6 +24,33 @@ impl ::std::convert::Into<String> for Units {
             Units::Volts => "VOLTS",
             Units::Raw => "RAW",
             Units::Unknow => unimplemented!(),
+        }.to_owned()
+    }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum Formats {
+    Ascii,
+    Binary,
+    Unknow,
+}
+
+impl ::std::convert::From<String> for Formats {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "ASCII" => Formats::Ascii,
+            "BIN" => Formats::Binary,
+            _ => Formats::Unknow,
+        }
+    }
+}
+
+impl ::std::convert::Into<String> for Formats {
+    fn into(self) -> String {
+        match self {
+            Formats::Ascii => "Ascii",
+            Formats::Binary => "BIN",
+            Formats::Unknow => unimplemented!(),
         }.to_owned()
     }
 }
@@ -117,7 +145,6 @@ impl ::std::convert::From<String> for Command {
 }
 
 pub struct Module {
-    binary_output: bool,
 }
 
 impl ::Module for Module {
@@ -125,7 +152,6 @@ impl ::Module for Module {
 
     fn new() -> Self {
         Module {
-            binary_output: false,
         }
     }
 
@@ -395,10 +421,12 @@ impl Module {
     }
 
     fn set_data_format(&mut self, args: Vec<String>) -> ::Result {
-        self.binary_output = match args.get(0) {
-            Some(format) => format == "BIN",
+        let format = match args.get(0) {
+            Some(format) => format.clone().into(),
             None => return Err("Missing parameter".to_owned()),
         };
+
+        Self::set_format(format);
 
         Ok(None)
     }
@@ -513,7 +541,7 @@ impl Module {
     }
 
     fn format_data<D>(&self, data: Vec<D>) -> ::Result where D: ::std::fmt::Display {
-        if self.binary_output {
+        if Self::get_format() == Formats::Binary {
             unimplemented!();
         }
         else {
@@ -539,6 +567,18 @@ impl Module {
     fn set_unit(unit: Units) {
         unsafe {
             UNIT = unit
+        }
+    }
+
+    fn get_format() -> Formats {
+        unsafe {
+            FORMAT
+        }
+    }
+
+    fn set_format(format: Formats) {
+        unsafe {
+            FORMAT = format
         }
     }
 }
