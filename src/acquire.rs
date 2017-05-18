@@ -483,12 +483,21 @@ impl Module {
         }
     }
 
-    fn format_data<D>(&self, data: Vec<D>) -> ::Result where D: ::std::fmt::Debug {
+    fn format_data<D>(&self, data: Vec<D>) -> ::Result where D: ::std::fmt::Display {
         if self.binary_output {
             unimplemented!();
         }
         else {
-            Ok(Some(format!("{:?}", data)))
+            let s = data.iter()
+                .map(|c| format!("{}", c))
+                .fold(String::new(), |mut acc, c| {
+                    acc.push_str(c.as_str());
+                    acc.push(',');
+
+                    acc
+                });
+
+            Ok(Some(format!("{{{}}}", s.trim_right_matches(','))))
         }
     }
 }
