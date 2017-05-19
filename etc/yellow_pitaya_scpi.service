@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 Restart=always
 Environment=LD_LIBRARY_PATH=/opt/redpitaya/lib
-Environment=RUST_LOG=info
+Environment=RUST_LOG=warn
 ExecStartPre=/bin/sh -c "cat /opt/redpitaya/fpga/fpga_0.94.bit > /dev/xdevcfg"
 ExecStart=/opt/yellow-pitaya/bin/scpi-server
 ExecStop=/bin/kill -15 $MAINPID
