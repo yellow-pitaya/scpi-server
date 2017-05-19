@@ -164,7 +164,7 @@ impl Server {
     }
 
     fn write(&self, stream: &mut ::std::net::TcpStream, response: String) {
-        info!("< {}", response);
+        debug!("< {}", response);
 
         stream.write(format!("{}\r\n", response).as_bytes())
             .unwrap();
