@@ -117,24 +117,27 @@ impl Server {
     }
 
     fn handle_client(&mut self, mut stream: ::std::net::TcpStream) {
-        let mut message = String::new();
+        let mut messages = String::new();
         let mut reader = ::std::io::BufReader::new(stream.try_clone().unwrap());
 
-        reader.read_line(&mut message)
+        reader.read_line(&mut messages)
             .unwrap();
-        debug!("> {:?}", message);
-        let (command, args) = self.parse_message(message);
-        info!("{:?} {:?}", command, args);
 
-        match self.execute(command, args) {
-            Ok(result) => if let Some(response) = result {
-                self.write(&mut stream, response);
-            },
-            Err(error) => {
-                error!("{}", error);
-                self.write(&mut stream, "ERR!".to_owned());
-            },
-        };
+        for message in messages.split(';') {
+            debug!("> {:?}", message);
+            let (command, args) = self.parse_message(message.to_owned());
+            info!("{:?} {:?}", command, args);
+
+            match self.execute(command, args) {
+                Ok(result) => if let Some(response) = result {
+                    self.write(&mut stream, response);
+                },
+                Err(error) => {
+                    error!("{}", error);
+                    self.write(&mut stream, "ERR!".to_owned());
+                },
+            };
+        }
     }
 
     fn parse_message(&self, command: String) -> (Command, Vec<String>) {
