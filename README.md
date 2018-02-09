@@ -12,4 +12,4 @@ cargo build --target armv7-unknown-linux-gnueabihf --release
 ## Install
 
 See this [ansible
-recepe](https://github.com/yellow-pitaya/controller/blob/master/redpitaya/tasks/scpi.yml).
+recipe](https://github.com/yellow-pitaya/controller/blob/master/redpitaya/tasks/scpi.yml).
