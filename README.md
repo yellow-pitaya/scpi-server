@@ -24,6 +24,22 @@ And finally:
 cargo build --target armv7-unknown-linux-gnueabihf --release
 ```
 
+## Testing
+
+Start the server on your repitaya:
+
+```
+# cat /opt/redpitaya/fpga/fpga_0.94.bit > /dev/xdevcfg
+# LD_LIBRARY_PATH=/opt/redpitaya/lib/ ./scpi-server
+```
+
+Then, on your computer:
+
+```
+$ echo '' | netcat rp-xxxx.local
+0.97-489-ef96127 (ef96127)
+```
+
 ## Install
 
 See this [ansible
