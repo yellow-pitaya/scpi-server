@@ -159,7 +159,7 @@ impl ::Module for Module {
         command.starts_with("ACQ")
     }
 
-    fn execute(&mut self, command: Command, args: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Command, args: &[String]) -> ::Result {
         match command {
             Command::Start => self.start(),
             Command::Stop => self.stop(),
@@ -219,7 +219,7 @@ impl Module {
         }
     }
 
-    fn set_decimation(&self, args: Vec<String>) -> ::Result {
+    fn set_decimation(&self, args: &[String]) -> ::Result {
         let decimation = match args.get(0) {
             Some(decimation) => decimation.parse::<u32>().unwrap().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -245,7 +245,7 @@ impl Module {
         }
     }
 
-    fn set_average(&self, args: Vec<String>) -> ::Result {
+    fn set_average(&self, args: &[String]) -> ::Result {
         let average = match args.get(0) {
             Some(average) => average.as_str() == "ON",
             None => return Err("Missing parameter".to_owned()),
@@ -266,7 +266,7 @@ impl Module {
         Ok(Some(averaging.to_owned()))
     }
 
-    fn set_trigger_source(&self, args: Vec<String>) -> ::Result {
+    fn set_trigger_source(&self, args: &[String]) -> ::Result {
         let source = match args.get(0) {
             Some(source) => source.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -291,7 +291,7 @@ impl Module {
         }
     }
 
-    fn set_trigger_delay(&self, args: Vec<String>) -> ::Result {
+    fn set_trigger_delay(&self, args: &[String]) -> ::Result {
         let delay = match args.get(0) {
             Some(delay) => delay.clone().parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -310,7 +310,7 @@ impl Module {
         }
     }
 
-    fn set_trigger_delay_ns(&self, args: Vec<String>) -> ::Result {
+    fn set_trigger_delay_ns(&self, args: &[String]) -> ::Result {
         let delay = match args.get(0) {
             Some(delay) => delay.clone().parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -329,7 +329,7 @@ impl Module {
         }
     }
 
-    fn set_trigger_hyst(&self, args: Vec<String>) -> ::Result {
+    fn set_trigger_hyst(&self, args: &[String]) -> ::Result {
         let hyst = match args.get(0) {
             Some(hyst) => hyst.clone().parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -348,7 +348,7 @@ impl Module {
         }
     }
 
-    fn set_gain(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_gain(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let gain = match args.get(0) {
             Some(gain) => gain.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -367,13 +367,13 @@ impl Module {
         }
     }
 
-    fn set_trigger_level(&self, args: Vec<String>) -> ::Result {
+    fn set_trigger_level(&self, args: &[String]) -> ::Result {
         let level = match args.get(0) {
             Some(level) => level.clone().parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
         };
 
-        for channel in [::redpitaya::Channel::RP_CH_1, ::redpitaya::Channel::RP_CH_2].iter() {
+        for channel in &[::redpitaya::Channel::RP_CH_1, ::redpitaya::Channel::RP_CH_2] {
             match ::redpitaya::acquire::set_trigger_level(*channel, level) {
                 Ok(_) => (),
                 Err(err) => return Err(err),
@@ -405,7 +405,7 @@ impl Module {
     }
 
 
-    fn set_data_units(&mut self, args: Vec<String>) -> ::Result {
+    fn set_data_units(&mut self, args: &[String]) -> ::Result {
         let unit = match args.get(0) {
             Some(arg) => arg.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -420,7 +420,7 @@ impl Module {
         Ok(Some(Self::get_unit().into()))
     }
 
-    fn set_data_format(&mut self, args: Vec<String>) -> ::Result {
+    fn set_data_format(&mut self, args: &[String]) -> ::Result {
         let format = match args.get(0) {
             Some(format) => format.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -431,7 +431,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_data_pos(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn get_data_pos(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let start = match args.get(0) {
             Some(start) => start.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -444,19 +444,19 @@ impl Module {
 
         if Self::get_unit() == Units::Volts {
             match ::redpitaya::acquire::get_data_pos_v(channel, start, end) {
-                Ok(data) => self.format_data(data),
+                Ok(data) => self.format_data(&data),
                 Err(err) => Err(err),
             }
         }
         else {
             match ::redpitaya::acquire::get_data_pos_raw(channel, start, end) {
-                Ok(data) => self.format_data(data),
+                Ok(data) => self.format_data(&data),
                 Err(err) => Err(err),
             }
         }
     }
 
-    fn get_data(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn get_data(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let start = match args.get(0) {
             Some(start) => start.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -469,19 +469,19 @@ impl Module {
 
         if Self::get_unit() == Units::Volts {
             match ::redpitaya::acquire::get_data_v(channel, start, size) {
-                Ok(data) => self.format_data(data),
+                Ok(data) => self.format_data(&data),
                 Err(err) => Err(err),
             }
         }
         else {
             match ::redpitaya::acquire::get_data_raw(channel, start, size) {
-                Ok(data) => self.format_data(data),
+                Ok(data) => self.format_data(&data),
                 Err(err) => Err(err),
             }
         }
     }
 
-    fn get_oldest_data(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn get_oldest_data(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let size = match args.get(0) {
             Some(end) => end.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -489,20 +489,20 @@ impl Module {
 
         if Self::get_unit() == Units::Volts {
             match ::redpitaya::acquire::get_oldest_data_v(channel, size) {
-                Ok(data) => self.format_data(data),
+                Ok(data) => self.format_data(&data),
                 Err(err) => Err(err),
             }
         }
         else {
             match ::redpitaya::acquire::get_oldest_data_raw(channel, size) {
-                Ok(data) => self.format_data(data),
+                Ok(data) => self.format_data(&data),
                 Err(err) => Err(err),
             }
         }
     }
 
-    fn get_all_data(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
-        let mut args = args;
+    fn get_all_data(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
+        let mut args = args.to_vec();
         let size = match ::redpitaya::acquire::get_buffer_size() {
             Ok(size) => size,
             Err(err) => return Err(err),
@@ -510,10 +510,10 @@ impl Module {
 
         args.push(format!("{}", size));
 
-        self.get_oldest_data(channel, args)
+        self.get_oldest_data(channel, &args)
     }
 
-    fn get_latest_data(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn get_latest_data(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let size = match args.get(0) {
             Some(end) => end.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -521,13 +521,13 @@ impl Module {
 
         if Self::get_unit() == Units::Volts {
             match ::redpitaya::acquire::get_latest_data_v(channel, size) {
-                Ok(data) => self.format_data(data),
+                Ok(data) => self.format_data(&data),
                 Err(err) => Err(err),
             }
         }
         else {
             match ::redpitaya::acquire::get_latest_data_raw(channel, size) {
-                Ok(data) => self.format_data(data),
+                Ok(data) => self.format_data(&data),
                 Err(err) => Err(err),
             }
         }
@@ -540,7 +540,7 @@ impl Module {
         }
     }
 
-    fn format_data<D>(&self, data: Vec<D>) -> ::Result where D: ::std::fmt::Display {
+    fn format_data<D>(&self, data: &[D]) -> ::Result where D: ::std::fmt::Display {
         if Self::get_format() == Formats::Binary {
             unimplemented!();
         }

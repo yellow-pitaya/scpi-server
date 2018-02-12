@@ -30,7 +30,7 @@ impl ::Module for Module {
         true
     }
 
-    fn execute(&mut self, command: Self::Command, _: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Self::Command, _: &[String]) -> ::Result {
         match command {
             Command::Echo => Self::echo(),
             Command::Version => Self::version(),

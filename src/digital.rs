@@ -36,7 +36,7 @@ impl ::Module for Module {
         command.starts_with("DIG:")
     }
 
-    fn execute(&mut self, command: Command, args: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Command, args: &[String]) -> ::Result {
         match command {
             Command::Reset => Self::reset(args),
             Command::PinState => Self::set_pin_state(args),
@@ -49,14 +49,14 @@ impl ::Module for Module {
 }
 
 impl Module {
-    fn reset(_: Vec<String>) -> ::Result {
+    fn reset(_: &[String]) -> ::Result {
         match ::redpitaya::pin::digital::reset() {
             Ok(_) => Ok(None),
             Err(err) => Err(err),
         }
     }
 
-    fn set_pin_state(args: Vec<String>) -> ::Result {
+    fn set_pin_state(args: &[String]) -> ::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -73,7 +73,7 @@ impl Module {
         }
     }
 
-    fn get_pin_state(args: Vec<String>) -> ::Result {
+    fn get_pin_state(args: &[String]) -> ::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -85,7 +85,7 @@ impl Module {
         }
     }
 
-    fn set_pin_direction(args: Vec<String>) -> ::Result {
+    fn set_pin_direction(args: &[String]) -> ::Result {
         let direction = match args.get(0) {
             Some(direction) => direction.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -102,7 +102,7 @@ impl Module {
         }
     }
 
-    fn get_pin_direction(args: Vec<String>) -> ::Result {
+    fn get_pin_direction(args: &[String]) -> ::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err("Missing parameter".to_owned()),

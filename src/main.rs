@@ -1,3 +1,6 @@
+#![cfg_attr(feature="clippy", feature(plugin))]
+#![cfg_attr(feature="clippy", plugin(clippy))]
+
 extern crate redpitaya;
 #[macro_use]
 extern crate log;
@@ -19,7 +22,7 @@ trait Module {
 
     fn new() -> Self;
     fn accept(command: String) -> bool;
-    fn execute(&mut self, command: Self::Command, args: Vec<String>) -> ::Result;
+    fn execute(&mut self, command: Self::Command, args: &[String]) -> ::Result;
 }
 
 fn main() {

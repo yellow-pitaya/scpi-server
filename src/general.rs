@@ -36,7 +36,7 @@ impl ::Module for Module {
         command.starts_with("RP:")
     }
 
-    fn execute(&mut self, command: Command, args: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Command, args: &[String]) -> ::Result {
         match command {
             Command::Init => Self::init(),
             Command::Reset => Self::reset(),
@@ -70,7 +70,7 @@ impl Module {
         Ok(None)
     }
 
-    fn fpga_bitstream(args: Vec<String>) -> ::Result {
+    fn fpga_bitstream(args: &[String]) -> ::Result {
         let version = match args.get(0) {
             Some(version) => version,
             None => return Err("Missing argument".to_owned()),

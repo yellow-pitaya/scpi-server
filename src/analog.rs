@@ -32,7 +32,7 @@ impl ::Module for Module {
         command.starts_with("ANALOG:")
     }
 
-    fn execute(&mut self, command: Command, args: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Command, args: &[String]) -> ::Result {
         match command {
             Command::Reset => Self::reset(args),
             Command::PinValue => Self::set_pin_value(args),
@@ -43,14 +43,14 @@ impl ::Module for Module {
 }
 
 impl Module {
-    fn reset(_: Vec<String>) -> ::Result {
+    fn reset(_: &[String]) -> ::Result {
         match ::redpitaya::pin::analog::reset() {
             Ok(_) => Ok(None),
             Err(err) => Err(err),
         }
     }
 
-    fn set_pin_value(args: Vec<String>) -> ::Result {
+    fn set_pin_value(args: &[String]) -> ::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -67,7 +67,7 @@ impl Module {
         }
     }
 
-    fn get_pin_value(args: Vec<String>) -> ::Result {
+    fn get_pin_value(args: &[String]) -> ::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err("Missing parameter".to_owned()),

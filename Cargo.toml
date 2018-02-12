@@ -7,3 +7,7 @@ authors = ["Sanpi <sanpi@homecomputing.fr>"]
 env_logger = "0.5"
 log = "0.4"
 redpitaya = "0.24"
+
+[dependencies.clippy]
+version = "*"
+optional = true

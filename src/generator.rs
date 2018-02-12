@@ -110,7 +110,7 @@ impl ::Module for Module {
             || command.starts_with("SOUR")
     }
 
-    fn execute(&mut self, command: Self::Command, args: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Self::Command, args: &[String]) -> ::Result {
         match command {
             Command::Reset => self.reset(args),
             Command::State(channel) => self.set_state(channel, args),
@@ -146,14 +146,14 @@ impl ::Module for Module {
 }
 
 impl Module {
-    fn reset(&self, _: Vec<String>) -> ::Result {
+    fn reset(&self, _: &[String]) -> ::Result {
         match ::redpitaya::generator::reset() {
             Ok(_) => Ok(None),
             Err(err) => Err(err),
         }
     }
 
-    fn set_state(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_state(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let state = match args.get(0) {
             Some(state) => state == "ON",
             None => return Err("Missing parameter".to_owned()),
@@ -172,7 +172,7 @@ impl Module {
         }
     }
 
-    fn get_state(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_state(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         let state = match ::redpitaya::generator::out_is_enable(channel) {
             Ok(state) => if state { "ON" } else { "OFF" },
             Err(err) => return Err(err),
@@ -181,7 +181,7 @@ impl Module {
         Ok(Some(state.to_owned()))
     }
 
-    fn set_frequency(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_frequency(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let frequency = match args.get(0) {
             Some(frequency) => frequency.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -193,14 +193,14 @@ impl Module {
         }
     }
 
-    fn get_frequency(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_frequency(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_freq(channel) {
             Ok(frequency) => Ok(Some(format!("{}", frequency))),
             Err(err) => Err(err),
         }
     }
 
-    fn set_function(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_function(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let function = match args.get(0) {
             Some(function) => function.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -212,14 +212,14 @@ impl Module {
         }
     }
 
-    fn get_function(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_function(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_waveform(channel) {
             Ok(function) => Ok(Some(function.into())),
             Err(err) => Err(err),
         }
     }
 
-    fn set_amplitude(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_amplitude(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let amplitute = match args.get(0) {
             Some(amplitute) => amplitute.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -231,14 +231,14 @@ impl Module {
         }
     }
 
-    fn get_amplitude(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_amplitude(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_amp(channel) {
             Ok(amplitute) => Ok(Some(format!("{}", amplitute))),
             Err(err) => Err(err),
         }
     }
 
-    fn set_offset(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_offset(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let offset = match args.get(0) {
             Some(offset) => offset.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -250,14 +250,14 @@ impl Module {
         }
     }
 
-    fn get_offset(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_offset(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_offset(channel) {
             Ok(offset) => Ok(Some(format!("{}", offset))),
             Err(err) => Err(err),
         }
     }
 
-    fn set_phase(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_phase(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let phase = match args.get(0) {
             Some(phase) => phase.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -269,14 +269,14 @@ impl Module {
         }
     }
 
-    fn get_phase(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_phase(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_phase(channel) {
             Ok(phase) => Ok(Some(format!("{}", phase))),
             Err(err) => Err(err),
         }
     }
 
-    fn set_duty_cycle(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_duty_cycle(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let duty_cycle = match args.get(0) {
             Some(duty_cycle) => duty_cycle.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -288,14 +288,14 @@ impl Module {
         }
     }
 
-    fn get_duty_cycle(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_duty_cycle(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_duty_cycle(channel) {
             Ok(duty_cycle) => Ok(Some(format!("{}", duty_cycle))),
             Err(err) => Err(err),
         }
     }
 
-    fn set_abritrary(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_abritrary(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let mut data: Vec<f32> = match args.get(0) {
             Some(data) => {
                 data.trim_matches(|c| c == '{' || c == '}')
@@ -312,7 +312,7 @@ impl Module {
         }
     }
 
-    fn get_abritrary(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_abritrary(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_arb_waveform(channel) {
             Ok(data) => {
                 let mut data = data.iter().fold(String::from("{"), |acc, v| {
@@ -327,7 +327,7 @@ impl Module {
         }
     }
 
-    fn set_mode(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_mode(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let mode = match args.get(0) {
             Some(mode) => mode.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -339,14 +339,14 @@ impl Module {
         }
     }
 
-    fn get_mode(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_mode(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_mode(channel) {
             Ok(mode) => Ok(Some(mode.into())),
             Err(err) => Err(err),
         }
     }
 
-    fn set_burst_count(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_burst_count(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let burs_count = match args.get(0) {
             Some(burs_count) => burs_count.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -358,14 +358,14 @@ impl Module {
         }
     }
 
-    fn get_burst_count(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_burst_count(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_burst_count(channel) {
             Ok(burst_count) => Ok(Some(format!("{}", burst_count))),
             Err(err) => Err(err),
         }
     }
 
-    fn set_burst_repetition(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_burst_repetition(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let bust_repetition = match args.get(0) {
             Some(bust_repetition) => bust_repetition.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -377,14 +377,14 @@ impl Module {
         }
     }
 
-    fn get_burst_repetition(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_burst_repetition(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_burst_repetitions(channel) {
             Ok(burst_repetition) => Ok(Some(format!("{}", burst_repetition))),
             Err(err) => Err(err),
         }
     }
 
-    fn set_burst_period(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_burst_period(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let burst_period = match args.get(0) {
             Some(burst_period) => burst_period.parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -396,14 +396,14 @@ impl Module {
         }
     }
 
-    fn get_burst_period(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_burst_period(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_burst_period(channel) {
             Ok(burst_period) => Ok(Some(format!("{}", burst_period))),
             Err(err) => Err(err),
         }
     }
 
-    fn set_trigger_source(&self, channel: ::redpitaya::Channel, args: Vec<String>) -> ::Result {
+    fn set_trigger_source(&self, channel: ::redpitaya::Channel, args: &[String]) -> ::Result {
         let source = match args.get(0) {
             Some(source) => source.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -415,14 +415,14 @@ impl Module {
         }
     }
 
-    fn get_trigger_source(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn get_trigger_source(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::get_trigger_source(channel) {
             Ok(source) => Ok(Some(source.into())),
             Err(err) => Err(err),
         }
     }
 
-    fn trigger(&self, channel: ::redpitaya::Channel, _: Vec<String>) -> ::Result {
+    fn trigger(&self, channel: ::redpitaya::Channel, _: &[String]) -> ::Result {
         match ::redpitaya::generator::trigger(channel) {
             Ok(_) => Ok(None),
             Err(err) => Err(err),

@@ -1,4 +1,4 @@
-const IDN: [&'static str; 4] = ["REDPITAYA", "INSTR2014", "0", "01-02"];
+const IDN: [&str; 4] = ["REDPITAYA", "INSTR2014", "0", "01-02"];
 
 #[derive(Debug)]
 pub enum Command {
@@ -27,10 +27,10 @@ impl ::Module for Module {
     }
 
     fn accept(command: String) -> bool {
-        command.starts_with("*")
+        command.starts_with('*')
     }
 
-    fn execute(&mut self, command: Self::Command, _: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Self::Command, _: &[String]) -> ::Result {
         match command {
             Command::Idn => Self::idn(),
             Command::Unknow => Err("Unknow command".to_owned()),

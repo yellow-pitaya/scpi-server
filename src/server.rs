@@ -73,7 +73,7 @@ impl ::Module for Server {
         true
     }
 
-    fn execute(&mut self, command: Self::Command, args: Vec<String>) -> ::Result {
+    fn execute(&mut self, command: Self::Command, args: &[String]) -> ::Result {
         match command {
             Command::Ieee(command) => self.ieee.execute(command, args),
             Command::Scpi(command) => self.scpi.execute(command, args),
@@ -125,29 +125,29 @@ impl Server {
 
         for message in messages.split(';') {
             debug!("> {:?}", message);
-            let (command, args) = self.parse_message(message.to_owned());
+            let (command, args) = self.parse_message(message);
             info!("{:?} {:?}", command, args);
 
-            match self.execute(command, args) {
+            match self.execute(command, &args) {
                 Ok(result) => if let Some(response) = result {
-                    self.write(&mut stream, response);
+                    self.write(&mut stream, &response);
                 },
                 Err(error) => {
                     error!("{}", error);
-                    self.write(&mut stream, "ERR!".to_owned());
+                    self.write(&mut stream, "ERR!");
                 },
             };
         }
     }
 
-    fn parse_message(&self, command: String) -> (Command, Vec<String>) {
+    fn parse_message(&self, command: &str) -> (Command, Vec<String>) {
         let args: Vec<String> = command.replace("\r\n", "")
             .split_whitespace()
             .map(|s| s.to_owned())
             .collect();
 
         let command = match args.get(0) {
-            Some(command) => command.clone(),
+            Some(command) => command.to_string(),
             None => return (Command::Error("Empty command".to_owned()), Vec::new()),
         };
 
@@ -163,10 +163,10 @@ impl Server {
         (command.into(), args)
     }
 
-    fn write(&self, stream: &mut ::std::net::TcpStream, response: String) {
+    fn write(&self, stream: &mut ::std::net::TcpStream, response: &str) {
         debug!("< {}", response);
 
-        stream.write(format!("{}\r\n", response).as_bytes())
+        stream.write_all(format!("{}\r\n", response).as_bytes())
             .unwrap();
     }
 }
