@@ -1,0 +1,12 @@
+language: rust
+
+cache: cargo
+
+sudo: false
+
+install:
+    - rustup toolchain install nightly
+
+script:
+  - cargo test
+  - cargo +nightly build --features="clippy"

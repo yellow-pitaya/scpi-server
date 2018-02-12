@@ -1,5 +1,7 @@
 # Scpi server
 
+[![Build Status](https://travis-ci.org/yellow-pitaya/scpi-server.svg?branch=master)](https://travis-ci.org/yellow-pitaya/scpi-server)
+
 This is a replacement SCPI server for redpitaya.
 
 ## Building

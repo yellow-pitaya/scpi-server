@@ -11,3 +11,6 @@ redpitaya = "0.25"
 [dependencies.clippy]
 version = "*"
 optional = true
+
+[badges]
+travis-ci = { repository = "yellow-pitaya/scpi-servere" }
