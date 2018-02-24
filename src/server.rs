@@ -89,16 +89,25 @@ impl ::Module for Server {
 
 impl Server {
     pub fn launch() {
-        let listener = ::std::net::TcpListener::bind("0.0.0.0:5000")
-            .unwrap();
+        let listener = match ::std::net::TcpListener::bind("0.0.0.0:5000") {
+            Ok(listener) => {
+                debug!("server started");
 
-        debug!("Server started");
+                listener
+            },
+            Err(err) => panic!("Unable to launch tcp server: {}", err),
+        };
 
-        ::redpitaya::init()
-            .unwrap();
 
-        ::redpitaya::reset()
-            .unwrap();
+        match ::redpitaya::init() {
+            Ok(_) => debug!("init done"),
+            Err(err) => panic!("Unable to init: {}", err),
+        };
+
+        match ::redpitaya::reset() {
+            Ok(_) => debug!("reset done"),
+            Err(err) => panic!("Unable to reset: {}", err),
+        };
 
         for stream in listener.incoming() {
             debug!("New client");
@@ -117,27 +126,37 @@ impl Server {
     }
 
     fn handle_client(&mut self, mut stream: ::std::net::TcpStream) {
-        let mut messages = String::new();
-        let mut reader = ::std::io::BufReader::new(stream.try_clone().unwrap());
+        let reader = ::std::io::BufReader::new(stream.try_clone().unwrap());
 
-        reader.read_line(&mut messages)
-            .unwrap();
+        for line in reader.lines() {
+            let responses = self.handle_line(&line.unwrap());
 
-        for message in messages.split(';') {
+            for response in responses {
+                self.write(&mut stream, &response);
+            }
+        }
+    }
+
+    fn handle_line(&mut self, line: &str) -> Vec<String> {
+        let mut responses = Vec::new();
+
+        for message in line.split(';') {
             debug!("> {:?}", message);
             let (command, args) = self.parse_message(message);
             info!("{:?} {:?}", command, args);
 
             match self.execute(command, &args) {
                 Ok(result) => if let Some(response) = result {
-                    self.write(&mut stream, &response);
+                    responses.push(response);
                 },
                 Err(error) => {
                     error!("{}", error);
-                    self.write(&mut stream, "ERR!");
+                    responses.push("ERR!".to_string());
                 },
             };
         }
+
+        responses
     }
 
     fn parse_message(&self, command: &str) -> (Command, Vec<String>) {
