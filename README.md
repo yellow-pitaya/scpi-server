@@ -38,8 +38,22 @@ Start the server on your repitaya:
 Then, on your computer:
 
 ```
-$ echo '' | netcat rp-xxxx.local
+$ echo 'ECO:VERSION?' | netcat rp-xxxx.local 5000
 0.97-489-ef96127 (ef96127)
+```
+
+## Debug
+
+If you have a problem, you can display more messages:
+
+```
+# LD_LIBRARY_PATH=/opt/redpitaya/lib/ RUST_LOG=debug ./scpi-server
+DEBUG 2018-02-24T14:12:44Z: scpi_server::server: Server started
+DEBUG 2018-02-24T14:12:46Z: scpi_server::server: New client
+DEBUG 2018-02-24T14:12:46Z: scpi_server::server: > "ECO:VERSION?\n"
+ INFO 2018-02-24T14:12:46Z: scpi_server::server: Scpi(Version) []
+DEBUG 2018-02-24T14:12:46Z: scpi_server::server: < 0.97-489-ef96127 (ef96127)
+DEBUG 2018-02-24T14:12:46Z: scpi_server::server: Client served
 ```
 
 ## Install
