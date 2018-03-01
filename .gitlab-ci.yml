@@ -1,0 +1,24 @@
+image: "rust:latest"
+
+lint:clippy:
+    before_script:
+        - rustup self update
+        - rustup component add clippy
+        - apt-get update -qq
+        - apt-get install -y -qq gcc-arm-linux-gnueabihf libclang1 g++
+        - rustup target install armv7-unknown-linux-gnueabihf
+    script: cargo clippy -- --deny warnings --target armv7-unknown-linux-gnueabihf
+
+test:debug:
+    before_script:
+        - apt-get update -qq
+        - apt-get install -y -qq gcc-arm-linux-gnueabihf libclang1 g++
+        - rustup target install armv7-unknown-linux-gnueabihf
+    script: cargo test --all-features --target armv7-unknown-linux-gnueabihf
+
+test:release:
+    before_script:
+        - apt-get update -qq
+        - apt-get install -y -qq gcc-arm-linux-gnueabihf libclang1 g++
+        - rustup target install armv7-unknown-linux-gnueabihf
+    script: cargo test --all-features --release --target armv7-unknown-linux-gnueabihf
