@@ -4,9 +4,9 @@ version = "1.0.0"
 authors = ["Sanpi <sanpi@homecomputing.fr>"]
 
 [dependencies]
-env_logger = "0.5"
+env_logger = "0.6"
 log = "0.4"
-redpitaya = "0.25"
+redpitaya = "0.26"
 
 [dependencies.clippy]
 version = "*"
