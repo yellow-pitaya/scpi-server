@@ -554,7 +554,7 @@ impl Module {
                     acc
                 });
 
-            Ok(Some(format!("{{{}}}", s.trim_right_matches(','))))
+            Ok(Some(format!("{{{}}}", s.trim_end_matches(','))))
         }
     }
 
