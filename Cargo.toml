@@ -8,9 +8,5 @@ env_logger = "0.6"
 log = "0.4"
 redpitaya = "0.26"
 
-[dependencies.clippy]
-version = "*"
-optional = true
-
 [badges]
 travis-ci = { repository = "yellow-pitaya/scpi-servere" }

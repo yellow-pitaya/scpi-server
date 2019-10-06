@@ -5,8 +5,8 @@ cache: cargo
 sudo: false
 
 install:
-    - rustup toolchain install nightly
+  - rustup component add clippy
 
 script:
   - cargo test
-  - cargo +nightly build --features="clippy"
+  - cargo clippy -- --deny warnings
