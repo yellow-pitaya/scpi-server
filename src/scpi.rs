@@ -5,7 +5,7 @@ pub enum Command {
     Unknow,
 }
 
-impl ::std::convert::From<String> for Command {
+impl std::convert::From<String> for Command {
     fn from(s: String) -> Self {
         match s.as_str() {
             "ECHO?" => Command::Echo,
@@ -18,7 +18,7 @@ impl ::std::convert::From<String> for Command {
 pub struct Module {
 }
 
-impl ::Module for Module {
+impl crate::Module for Module {
     type Command = Command;
 
     fn new() -> Self {
@@ -30,7 +30,7 @@ impl ::Module for Module {
         true
     }
 
-    fn execute(&mut self, command: Self::Command, _: &[String]) -> ::Result {
+    fn execute(&mut self, command: Self::Command, _: &[String]) -> crate::Result {
         match command {
             Command::Echo => Self::echo(),
             Command::Version => Self::version(),
@@ -40,11 +40,11 @@ impl ::Module for Module {
 }
 
 impl Module {
-    fn echo() -> ::Result {
+    fn echo() -> crate::Result {
         Ok(Some("ECHO?".to_owned()))
     }
 
-    fn version() -> ::Result {
-        Ok(Some(::redpitaya::get_version()))
+    fn version() -> crate::Result {
+        Ok(Some(redpitaya::get_version()))
     }
 }
