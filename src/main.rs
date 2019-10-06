@@ -1,8 +1,3 @@
-extern crate redpitaya;
-#[macro_use]
-extern crate log;
-extern crate env_logger;
-
 mod ieee;
 mod scpi;
 mod general;
@@ -12,18 +7,18 @@ mod acquire;
 mod generator;
 mod server;
 
-type Result = ::std::result::Result<Option<String>, String>;
+type Result = std::result::Result<Option<String>, String>;
 
 trait Module {
-    type Command: ::std::convert::From<String>;
+    type Command: std::convert::From<String>;
 
     fn new() -> Self;
     fn accept(command: String) -> bool;
-    fn execute(&mut self, command: Self::Command, args: &[String]) -> ::Result;
+    fn execute(&mut self, command: Self::Command, args: &[String]) -> Result;
 }
 
 fn main() {
-    ::env_logger::init();
+    env_logger::init();
 
-    ::server::Server::launch();
+    server::Server::launch();
 }

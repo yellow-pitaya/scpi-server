@@ -6,10 +6,10 @@ pub enum Command {
     Unknow,
 }
 
-impl ::std::convert::From<String> for Command {
+impl std::convert::From<String> for Command {
     fn from(s: String) -> Self {
         match s.as_str() {
-            "*IDN?" => ::ieee::Command::Idn,
+            "*IDN?" => Command::Idn,
             _ => Command::Unknow,
         }
     }
@@ -18,7 +18,7 @@ impl ::std::convert::From<String> for Command {
 pub struct Module {
 }
 
-impl ::Module for Module {
+impl crate::Module for Module {
     type Command = Command;
 
     fn new() -> Self {
@@ -30,7 +30,7 @@ impl ::Module for Module {
         command.starts_with('*')
     }
 
-    fn execute(&mut self, command: Self::Command, _: &[String]) -> ::Result {
+    fn execute(&mut self, command: Self::Command, _: &[String]) -> crate::Result {
         match command {
             Command::Idn => Self::idn(),
             Command::Unknow => Err("Unknow command".to_owned()),
@@ -39,7 +39,7 @@ impl ::Module for Module {
 }
 
 impl Module {
-    fn idn() -> ::Result {
+    fn idn() -> crate::Result {
         Ok(Some(IDN.join(",")))
     }
 }

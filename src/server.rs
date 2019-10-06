@@ -1,41 +1,41 @@
+use crate::Module;
 use std::io::prelude::*;
-use ::Module;
 
 #[derive(Debug)]
 pub enum Command {
-    Ieee(::ieee::Command),
-    Scpi(::scpi::Command),
-    General(::general::Command),
-    Digital(::digital::Command),
-    Analog(::analog::Command),
-    Acquire(::acquire::Command),
-    Generator(::generator::Command),
+    Ieee(crate::ieee::Command),
+    Scpi(crate::scpi::Command),
+    General(crate::general::Command),
+    Digital(crate::digital::Command),
+    Analog(crate::analog::Command),
+    Acquire(crate::acquire::Command),
+    Generator(crate::generator::Command),
     Error(String),
 }
 
-impl ::std::convert::From<String> for Command {
+impl std::convert::From<String> for Command {
     fn from(s: String) -> Self {
         let s = s.to_uppercase();
 
-        if ::ieee::Module::accept(s.clone()) {
+        if crate::ieee::Module::accept(s.clone()) {
             Command::Ieee(s.into())
         }
-        else if ::general::Module::accept(s.clone()) {
+        else if crate::general::Module::accept(s.clone()) {
             Command::General(s.into())
         }
-        else if ::digital::Module::accept(s.clone()) {
+        else if crate::digital::Module::accept(s.clone()) {
             Command::Digital(s.into())
         }
-        else if ::analog::Module::accept(s.clone()) {
+        else if crate::analog::Module::accept(s.clone()) {
             Command::Analog(s.into())
         }
-        else if ::acquire::Module::accept(s.clone()) {
+        else if crate::acquire::Module::accept(s.clone()) {
             Command::Acquire(s.into())
         }
-        else if ::generator::Module::accept(s.clone()) {
+        else if crate::generator::Module::accept(s.clone()) {
             Command::Generator(s.into())
         }
-        else if ::scpi::Module::accept(s.clone()) {
+        else if crate::scpi::Module::accept(s.clone()) {
             Command::Scpi(s.into())
         }
         else {
@@ -45,27 +45,27 @@ impl ::std::convert::From<String> for Command {
 }
 
 pub struct Server {
-    ieee: ::ieee::Module,
-    scpi: ::scpi::Module,
-    general: ::general::Module,
-    digital: ::digital::Module,
-    analog: ::analog::Module,
-    acquire: ::acquire::Module,
-    generator: ::generator::Module,
+    ieee: crate::ieee::Module,
+    scpi: crate::scpi::Module,
+    general: crate::general::Module,
+    digital: crate::digital::Module,
+    analog: crate::analog::Module,
+    acquire: crate::acquire::Module,
+    generator: crate::generator::Module,
 }
 
-impl ::Module for Server {
+impl crate::Module for Server {
     type Command = Command;
 
     fn new() -> Self {
         Server {
-            ieee: ::ieee::Module::new(),
-            scpi: ::scpi::Module::new(),
-            general: ::general::Module::new(),
-            digital: ::digital::Module::new(),
-            analog: ::analog::Module::new(),
-            acquire: ::acquire::Module::new(),
-            generator: ::generator::Module::new(),
+            ieee: crate::ieee::Module::new(),
+            scpi: crate::scpi::Module::new(),
+            general: crate::general::Module::new(),
+            digital: crate::digital::Module::new(),
+            analog: crate::analog::Module::new(),
+            acquire: crate::acquire::Module::new(),
+            generator: crate::generator::Module::new(),
         }
     }
 
@@ -73,7 +73,7 @@ impl ::Module for Server {
         true
     }
 
-    fn execute(&mut self, command: Self::Command, args: &[String]) -> ::Result {
+    fn execute(&mut self, command: Self::Command, args: &[String]) -> crate::Result {
         match command {
             Command::Ieee(command) => self.ieee.execute(command, args),
             Command::Scpi(command) => self.scpi.execute(command, args),
@@ -89,9 +89,9 @@ impl ::Module for Server {
 
 impl Server {
     pub fn launch() {
-        let listener = match ::std::net::TcpListener::bind("0.0.0.0:5000") {
+        let listener = match std::net::TcpListener::bind("0.0.0.0:5000") {
             Ok(listener) => {
-                debug!("server started");
+                log::debug!("server started");
 
                 listener
             },
@@ -99,34 +99,34 @@ impl Server {
         };
 
 
-        match ::redpitaya::init() {
-            Ok(_) => debug!("init done"),
+        match redpitaya::init() {
+            Ok(_) => log::debug!("init done"),
             Err(err) => panic!("Unable to init: {}", err),
         };
 
-        match ::redpitaya::reset() {
-            Ok(_) => debug!("reset done"),
+        match redpitaya::reset() {
+            Ok(_) => log::debug!("reset done"),
             Err(err) => panic!("Unable to reset: {}", err),
         };
 
         for stream in listener.incoming() {
-            debug!("New client");
+            log::debug!("New client");
             match stream {
                 Ok(stream) => {
-                    ::std::thread::spawn(move || {
+                    std::thread::spawn(move || {
                         let mut server = Self::new();
 
                         server.handle_client(stream);
-                        debug!("Client served");
+                        log::debug!("Client served");
                     });
                 },
-                Err(e) => error!("failed: {}", e),
+                Err(e) => log::error!("failed: {}", e),
             }
         }
     }
 
-    fn handle_client(&mut self, mut stream: ::std::net::TcpStream) {
-        let reader = ::std::io::BufReader::new(stream.try_clone().unwrap());
+    fn handle_client(&mut self, mut stream: std::net::TcpStream) {
+        let reader = std::io::BufReader::new(stream.try_clone().unwrap());
 
         for line in reader.lines() {
             let responses = self.handle_line(&line.unwrap());
@@ -141,16 +141,16 @@ impl Server {
         let mut responses = Vec::new();
 
         for message in line.split(';') {
-            debug!("> {:?}", message);
+            log::debug!("> {:?}", message);
             let (command, args) = self.parse_message(message);
-            info!("{:?} {:?}", command, args);
+            log::info!("{:?} {:?}", command, args);
 
             match self.execute(command, &args) {
                 Ok(result) => if let Some(response) = result {
                     responses.push(response);
                 },
                 Err(error) => {
-                    error!("{}", error);
+                    log::error!("{}", error);
                     responses.push("ERR!".to_string());
                 },
             };
@@ -182,8 +182,8 @@ impl Server {
         (command.into(), args)
     }
 
-    fn write(&self, stream: &mut ::std::net::TcpStream, response: &str) {
-        debug!("< {}", response);
+    fn write(&self, stream: &mut std::net::TcpStream, response: &str) {
+        log::debug!("< {}", response);
 
         stream.write_all(format!("{}\r\n", response).as_bytes())
             .unwrap();

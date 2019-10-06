@@ -8,7 +8,7 @@ pub enum Command {
     Unknow,
 }
 
-impl ::std::convert::From<String> for Command {
+impl std::convert::From<String> for Command {
     fn from(s: String) -> Self {
         match s.as_str() {
             "DIG:RST" => Command::Reset,
@@ -24,7 +24,7 @@ impl ::std::convert::From<String> for Command {
 pub struct Module {
 }
 
-impl ::Module for Module {
+impl crate::Module for Module {
     type Command = Command;
 
     fn new() -> Self {
@@ -36,7 +36,7 @@ impl ::Module for Module {
         command.starts_with("DIG:")
     }
 
-    fn execute(&mut self, command: Command, args: &[String]) -> ::Result {
+    fn execute(&mut self, command: Command, args: &[String]) -> crate::Result {
         match command {
             Command::Reset => Self::reset(args),
             Command::PinState => Self::set_pin_state(args),
@@ -49,14 +49,14 @@ impl ::Module for Module {
 }
 
 impl Module {
-    fn reset(_: &[String]) -> ::Result {
-        match ::redpitaya::pin::digital::reset() {
+    fn reset(_: &[String]) -> crate::Result {
+        match redpitaya::pin::digital::reset() {
             Ok(_) => Ok(None),
             Err(err) => Err(err),
         }
     }
 
-    fn set_pin_state(args: &[String]) -> ::Result {
+    fn set_pin_state(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -67,25 +67,25 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match ::redpitaya::pin::digital::set_state(pin, state) {
+        match redpitaya::pin::digital::set_state(pin, state) {
             Ok(_) => Ok(None),
             Err(err) => Err(err),
         }
     }
 
-    fn get_pin_state(args: &[String]) -> ::Result {
+    fn get_pin_state(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match ::redpitaya::pin::digital::get_state(pin) {
-            Ok(state) => Ok(Some(format!("{}", ::std::convert::Into::<u8>::into(state)))),
+        match redpitaya::pin::digital::get_state(pin) {
+            Ok(state) => Ok(Some(format!("{}", std::convert::Into::<u8>::into(state)))),
             Err(err) => Err(err),
         }
     }
 
-    fn set_pin_direction(args: &[String]) -> ::Result {
+    fn set_pin_direction(args: &[String]) -> crate::Result {
         let direction = match args.get(0) {
             Some(direction) => direction.clone().into(),
             None => return Err("Missing parameter".to_owned()),
@@ -96,19 +96,19 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match ::redpitaya::pin::digital::set_direction(pin, direction) {
+        match redpitaya::pin::digital::set_direction(pin, direction) {
             Ok(_) => Ok(None),
             Err(err) => Err(err),
         }
     }
 
-    fn get_pin_direction(args: &[String]) -> ::Result {
+    fn get_pin_direction(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match ::redpitaya::pin::digital::get_direction(pin) {
+        match redpitaya::pin::digital::get_direction(pin) {
             Ok(direction) => Ok(Some(direction.into())),
             Err(err) => Err(err),
         }
