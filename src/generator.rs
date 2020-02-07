@@ -321,7 +321,7 @@ impl Module {
                 data.pop();
                 data.push('}');
 
-                Ok(Some(format!("{}", data)))
+                Ok(Some(data))
             },
             Err(err) => Err(format!("{:?}", err)),
         }

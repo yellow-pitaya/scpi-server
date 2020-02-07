@@ -522,7 +522,7 @@ impl Module {
         if Self::get_unit() == Units::Volts {
             match redpitaya::acquire::get_latest_data_v(channel, size) {
                 Ok(data) => self.format_data(&data),
-                Err(err) => return Err(format!("{:?}", err)),
+                Err(err) => Err(format!("{:?}", err)),
             }
         }
         else {
