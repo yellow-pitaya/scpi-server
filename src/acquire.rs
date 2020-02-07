@@ -201,21 +201,21 @@ impl Module {
     fn start(&self) -> crate::Result {
         match redpitaya::acquire::start() {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn stop(&self) -> crate::Result {
         match redpitaya::acquire::stop() {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn reset(&self) -> crate::Result {
         match redpitaya::acquire::reset() {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -227,21 +227,21 @@ impl Module {
 
         match redpitaya::acquire::set_decimation(decimation) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_decimation(&self) -> crate::Result {
         match redpitaya::acquire::get_decimation() {
             Ok(decimation) => Ok(Some(format!("{}", std::convert::Into::<u32>::into(decimation)))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_sampling_rate(&self) -> crate::Result {
         match redpitaya::acquire::get_sampling_rate() {
             Ok(sampling_rate) => Ok(Some(sampling_rate.into())),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -253,14 +253,14 @@ impl Module {
 
         match redpitaya::acquire::set_averaging(average) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_average(&self) -> crate::Result {
         let averaging = match redpitaya::acquire::get_averaging() {
             Ok(averaging) => if averaging { "ON" } else { "OFF" },
-            Err(err) => return Err(err),
+            Err(err) => return Err(format!("{:?}", err)),
         };
 
         Ok(Some(averaging.to_owned()))
@@ -274,14 +274,14 @@ impl Module {
 
         match redpitaya::acquire::set_trigger_src(source) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_trigger_source(&self) -> crate::Result {
         let state = match redpitaya::acquire::get_trigger_src() {
             Ok(source) => source,
-            Err(err) => return Err(err),
+            Err(err) => return Err(format!("{:?}", err)),
         };
 
         if state == redpitaya::acquire::TrigSrc::RP_TRIG_SRC_DISABLED {
@@ -299,14 +299,14 @@ impl Module {
 
         match redpitaya::acquire::set_trigger_delay(delay) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_trigger_delay(&self) -> crate::Result {
         match redpitaya::acquire::get_trigger_delay() {
             Ok(delay) => Ok(Some(format!("{}", delay))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -318,14 +318,14 @@ impl Module {
 
         match redpitaya::acquire::set_trigger_delay_ns(delay) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_trigger_delay_ns(&self) -> crate::Result {
         match redpitaya::acquire::get_trigger_delay_ns() {
             Ok(delay) => Ok(Some(format!("{}", delay))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -337,14 +337,14 @@ impl Module {
 
         match redpitaya::acquire::set_trigger_hyst(hyst) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_trigger_hyst(&self) -> crate::Result {
         match redpitaya::acquire::get_trigger_hyst() {
             Ok(hyst) => Ok(Some(format!("{}", hyst))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -356,14 +356,14 @@ impl Module {
 
         match redpitaya::acquire::set_gain(channel, gain) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_gain(&self, channel: redpitaya::Channel) -> crate::Result {
         match redpitaya::acquire::get_gain(channel) {
             Ok(gain) => Ok(Some(gain.into())),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -376,7 +376,7 @@ impl Module {
         for channel in &[::redpitaya::Channel::RP_CH_1, redpitaya::Channel::RP_CH_2] {
             match redpitaya::acquire::set_trigger_level(*channel, level) {
                 Ok(_) => (),
-                Err(err) => return Err(err),
+                Err(err) => return Err(format!("{:?}", err)),
             }
         }
 
@@ -386,21 +386,21 @@ impl Module {
     fn get_trigger_level(&self) -> crate::Result {
         match redpitaya::acquire::get_trigger_level() {
             Ok(level) => Ok(Some(format!("{}", level))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_wpos(&self) -> crate::Result {
         match redpitaya::acquire::get_write_pointer() {
             Ok(pos) => Ok(Some(format!("{}", pos))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_tpos(&self) -> crate::Result {
         match redpitaya::acquire::get_write_pointer_at_trig() {
             Ok(pos) => Ok(Some(format!("{}", pos))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -445,13 +445,13 @@ impl Module {
         if Self::get_unit() == Units::Volts {
             match redpitaya::acquire::get_data_pos_v(channel, start, end) {
                 Ok(data) => self.format_data(&data),
-                Err(err) => Err(err),
+                Err(err) => Err(format!("{:?}", err)),
             }
         }
         else {
             match redpitaya::acquire::get_data_pos_raw(channel, start, end) {
                 Ok(data) => self.format_data(&data),
-                Err(err) => Err(err),
+                Err(err) => Err(format!("{:?}", err)),
             }
         }
     }
@@ -470,13 +470,13 @@ impl Module {
         if Self::get_unit() == Units::Volts {
             match redpitaya::acquire::get_data_v(channel, start, size) {
                 Ok(data) => self.format_data(&data),
-                Err(err) => Err(err),
+                Err(err) => Err(format!("{:?}", err)),
             }
         }
         else {
             match redpitaya::acquire::get_data_raw(channel, start, size) {
                 Ok(data) => self.format_data(&data),
-                Err(err) => Err(err),
+                Err(err) => Err(format!("{:?}", err)),
             }
         }
     }
@@ -490,13 +490,13 @@ impl Module {
         if Self::get_unit() == Units::Volts {
             match redpitaya::acquire::get_oldest_data_v(channel, size) {
                 Ok(data) => self.format_data(&data),
-                Err(err) => Err(err),
+                Err(err) => Err(format!("{:?}", err)),
             }
         }
         else {
             match redpitaya::acquire::get_oldest_data_raw(channel, size) {
                 Ok(data) => self.format_data(&data),
-                Err(err) => Err(err),
+                Err(err) => Err(format!("{:?}", err)),
             }
         }
     }
@@ -505,7 +505,7 @@ impl Module {
         let mut args = args.to_vec();
         let size = match redpitaya::acquire::get_buffer_size() {
             Ok(size) => size,
-            Err(err) => return Err(err),
+            Err(err) => return Err(format!("{:?}", err)),
         };
 
         args.push(format!("{}", size));
@@ -522,13 +522,13 @@ impl Module {
         if Self::get_unit() == Units::Volts {
             match redpitaya::acquire::get_latest_data_v(channel, size) {
                 Ok(data) => self.format_data(&data),
-                Err(err) => Err(err),
+                Err(err) => return Err(format!("{:?}", err)),
             }
         }
         else {
             match redpitaya::acquire::get_latest_data_raw(channel, size) {
                 Ok(data) => self.format_data(&data),
-                Err(err) => Err(err),
+                Err(err) => Err(format!("{:?}", err)),
             }
         }
     }
@@ -536,7 +536,7 @@ impl Module {
     fn get_buffer_size(&self) -> crate::Result {
         match redpitaya::acquire::get_buffer_size() {
             Ok(size) => Ok(Some(format!("{}", size))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 

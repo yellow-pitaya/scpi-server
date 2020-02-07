@@ -149,7 +149,7 @@ impl Module {
     fn reset(&self, _: &[String]) -> crate::Result {
         match redpitaya::generator::reset() {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -168,14 +168,14 @@ impl Module {
 
         match result {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_state(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let state = match redpitaya::generator::out_is_enable(channel) {
             Ok(state) => if state { "ON" } else { "OFF" },
-            Err(err) => return Err(err),
+            Err(err) => return Err(format!("{:?}", err)),
         };
 
         Ok(Some(state.to_owned()))
@@ -189,14 +189,14 @@ impl Module {
 
         match redpitaya::generator::freq(channel, frequency) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_frequency(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_freq(channel) {
             Ok(frequency) => Ok(Some(format!("{}", frequency))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -208,14 +208,14 @@ impl Module {
 
         match redpitaya::generator::waveform(channel, function) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_function(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_waveform(channel) {
             Ok(function) => Ok(Some(function.into())),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -227,14 +227,14 @@ impl Module {
 
         match redpitaya::generator::amp(channel, amplitute) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_amplitude(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_amp(channel) {
             Ok(amplitute) => Ok(Some(format!("{}", amplitute))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -246,14 +246,14 @@ impl Module {
 
         match redpitaya::generator::offset(channel, offset) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_offset(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_offset(channel) {
             Ok(offset) => Ok(Some(format!("{}", offset))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -265,14 +265,14 @@ impl Module {
 
         match redpitaya::generator::phase(channel, phase) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_phase(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_phase(channel) {
             Ok(phase) => Ok(Some(format!("{}", phase))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -284,14 +284,14 @@ impl Module {
 
         match redpitaya::generator::duty_cycle(channel, duty_cycle) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_duty_cycle(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_duty_cycle(channel) {
             Ok(duty_cycle) => Ok(Some(format!("{}", duty_cycle))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -308,7 +308,7 @@ impl Module {
 
         match redpitaya::generator::arb_waveform(channel, data.as_mut_slice()) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -323,7 +323,7 @@ impl Module {
 
                 Ok(Some(format!("{}", data)))
             },
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -335,14 +335,14 @@ impl Module {
 
         match redpitaya::generator::mode(channel, mode) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_mode(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_mode(channel) {
             Ok(mode) => Ok(Some(mode.into())),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -354,14 +354,14 @@ impl Module {
 
         match redpitaya::generator::burst_count(channel, burs_count) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_burst_count(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_burst_count(channel) {
             Ok(burst_count) => Ok(Some(format!("{}", burst_count))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -373,14 +373,14 @@ impl Module {
 
         match redpitaya::generator::burst_repetitions(channel, bust_repetition) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_burst_repetition(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_burst_repetitions(channel) {
             Ok(burst_repetition) => Ok(Some(format!("{}", burst_repetition))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -392,14 +392,14 @@ impl Module {
 
         match redpitaya::generator::burst_period(channel, burst_period) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_burst_period(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_burst_period(channel) {
             Ok(burst_period) => Ok(Some(format!("{}", burst_period))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -411,21 +411,21 @@ impl Module {
 
         match redpitaya::generator::trigger_source(channel, source) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_trigger_source(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::get_trigger_source(channel) {
             Ok(source) => Ok(Some(source.into())),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn trigger(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         match redpitaya::generator::trigger(channel) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 }

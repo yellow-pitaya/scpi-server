@@ -52,7 +52,7 @@ impl Module {
     fn reset(_: &[String]) -> crate::Result {
         match redpitaya::pin::digital::reset() {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -69,7 +69,7 @@ impl Module {
 
         match redpitaya::pin::digital::set_state(pin, state) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -81,7 +81,7 @@ impl Module {
 
         match redpitaya::pin::digital::get_state(pin) {
             Ok(state) => Ok(Some(format!("{}", std::convert::Into::<u8>::into(state)))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -98,7 +98,7 @@ impl Module {
 
         match redpitaya::pin::digital::set_direction(pin, direction) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -110,7 +110,7 @@ impl Module {
 
         match redpitaya::pin::digital::get_direction(pin) {
             Ok(direction) => Ok(Some(direction.into())),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 }

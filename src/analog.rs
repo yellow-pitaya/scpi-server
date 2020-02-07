@@ -46,7 +46,7 @@ impl Module {
     fn reset(_: &[String]) -> crate::Result {
         match redpitaya::pin::analog::reset() {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -63,7 +63,7 @@ impl Module {
 
         match redpitaya::pin::analog::set_value(pin, value) {
             Ok(_) => Ok(None),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 
@@ -75,7 +75,7 @@ impl Module {
 
         match redpitaya::pin::analog::get_value(pin) {
             Ok(value) => Ok(Some(format!("{}", value))),
-            Err(err) => Err(err),
+            Err(err) => Err(format!("{:?}", err)),
         }
     }
 }
