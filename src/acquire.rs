@@ -73,20 +73,20 @@ pub enum Command {
     TriggerDelayNsQuery,
     TriggerHyst,
     TriggerHystQuery,
-    Gain(::redpitaya::Channel),
-    GainQuery(::redpitaya::Channel),
-    TriggerLevel,
-    TriggerLevelQuery,
+    Gain(redpitaya::Channel),
+    GainQuery(redpitaya::Channel),
+    TriggerLevel(redpitaya::acquire::Channel),
+    TriggerLevelQuery(redpitaya::acquire::Channel),
     WposQuery,
     TposQuery,
     DataUnits,
     DataUnitsQuery,
     DataFormat,
-    DataPosQuery(::redpitaya::Channel),
-    DataQuery(::redpitaya::Channel),
-    DataOldestQuery(::redpitaya::Channel),
-    DataAllQuery(::redpitaya::Channel),
-    DataLatestQuery(::redpitaya::Channel),
+    DataPosQuery(redpitaya::Channel),
+    DataQuery(redpitaya::Channel),
+    DataOldestQuery(redpitaya::Channel),
+    DataAllQuery(redpitaya::Channel),
+    DataLatestQuery(redpitaya::Channel),
     BufferSizeQuery,
     Unknow,
 }
@@ -105,6 +105,24 @@ impl std::convert::From<String> for Command {
         }
         else {
             s
+        };
+
+        let mut trigger = redpitaya::acquire::Channel::RP_T_CH_1;
+
+        let command = if command.contains(":TRIG:1:") {
+            trigger = redpitaya::acquire::Channel::RP_T_CH_1;
+            command.replace(":TRIG:1:", ":TRIG:#:")
+        }
+        else if command.contains(":TRIG:2:") {
+            trigger = redpitaya::acquire::Channel::RP_T_CH_2;
+            command.replace(":TRIG:2:", ":TRIG:#:")
+        }
+        else if command.contains(":TRIG:EXT:") {
+            trigger = redpitaya::acquire::Channel::RP_T_CH_EXT;
+            command.replace(":TRIG:EXT:", ":TRIG:#:")
+        }
+        else {
+            command
         };
 
         match command.as_str() {
@@ -126,8 +144,8 @@ impl std::convert::From<String> for Command {
             "ACQ:TRIG:HYST?" => Command::TriggerHystQuery,
             "ACQ:SOUR#:GAIN" => Command::Gain(channel),
             "ACQ:SOUR#:GAIN?" => Command::GainQuery(channel),
-            "ACQ:TRIG:LEV" => Command::TriggerLevel,
-            "ACQ:TRIG:LEV?" => Command::TriggerLevelQuery,
+            "ACQ:TRIG:#:LEV" => Command::TriggerLevel(trigger),
+            "ACQ:TRIG:#:LEV?" => Command::TriggerLevelQuery(trigger),
             "ACQ:WPOS?" => Command::WposQuery,
             "ACQ:TPOS?" => Command::TposQuery,
             "ACQ:DATA:UNITS" => Command::DataUnits,
@@ -179,8 +197,8 @@ impl crate::Module for Module {
             Command::TriggerHystQuery => self.get_trigger_hyst(),
             Command::Gain(channel) => self.set_gain(channel, args),
             Command::GainQuery(channel) => self.get_gain(channel),
-            Command::TriggerLevel => self.set_trigger_level(args),
-            Command::TriggerLevelQuery => self.get_trigger_level(),
+            Command::TriggerLevel(channel) => self.set_trigger_level(channel, args),
+            Command::TriggerLevelQuery(channel) => self.get_trigger_level(channel),
             Command::WposQuery => self.get_wpos(),
             Command::TposQuery => self.get_tpos(),
             Command::DataUnits => self.set_data_units(args),
@@ -367,24 +385,20 @@ impl Module {
         }
     }
 
-    fn set_trigger_level(&self, args: &[String]) -> crate::Result {
+    fn set_trigger_level(&self, channel: redpitaya::acquire::Channel, args: &[String]) -> crate::Result {
         let level = match args.get(0) {
             Some(level) => level.clone().parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
         };
 
-        for channel in &[::redpitaya::Channel::RP_CH_1, redpitaya::Channel::RP_CH_2] {
-            match redpitaya::acquire::set_trigger_level(*channel, level) {
-                Ok(_) => (),
-                Err(err) => return Err(format!("{:?}", err)),
-            }
+        match redpitaya::acquire::set_trigger_level(channel, level) {
+            Ok(_) => Ok(None),
+            Err(err) => return Err(format!("{:?}", err)),
         }
-
-        Ok(None)
     }
 
-    fn get_trigger_level(&self) -> crate::Result {
-        match redpitaya::acquire::get_trigger_level() {
+    fn get_trigger_level(&self, channel: redpitaya::acquire::Channel) -> crate::Result {
+        match redpitaya::acquire::get_trigger_level(channel) {
             Ok(level) => Ok(Some(format!("{}", level))),
             Err(err) => Err(format!("{:?}", err)),
         }
