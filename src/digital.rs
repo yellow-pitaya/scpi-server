@@ -79,7 +79,7 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::pin::digital::get_state(pin) {
+        match redpitaya::pin::digital::state(pin) {
             Ok(state) => Ok(Some(format!("{}", std::convert::Into::<u8>::into(state)))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -108,7 +108,7 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::pin::digital::get_direction(pin) {
+        match redpitaya::pin::digital::direction(pin) {
             Ok(direction) => Ok(Some(direction.into())),
             Err(err) => Err(format!("{:?}", err)),
         }

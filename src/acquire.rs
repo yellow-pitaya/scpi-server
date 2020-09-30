@@ -75,8 +75,10 @@ pub enum Command {
     TriggerHystQuery,
     Gain(redpitaya::Channel),
     GainQuery(redpitaya::Channel),
-    TriggerLevel(redpitaya::acquire::Channel),
-    TriggerLevelQuery(redpitaya::acquire::Channel),
+    TriggerLevel,
+    TriggerLevelQuery,
+    TriggerExtLevel,
+    TriggerExtLevelQuery,
     WposQuery,
     TposQuery,
     DataUnits,
@@ -107,24 +109,6 @@ impl std::convert::From<String> for Command {
             s
         };
 
-        let mut trigger = redpitaya::acquire::Channel::RP_T_CH_1;
-
-        let command = if command.contains(":TRIG:1:") {
-            trigger = redpitaya::acquire::Channel::RP_T_CH_1;
-            command.replace(":TRIG:1:", ":TRIG:#:")
-        }
-        else if command.contains(":TRIG:2:") {
-            trigger = redpitaya::acquire::Channel::RP_T_CH_2;
-            command.replace(":TRIG:2:", ":TRIG:#:")
-        }
-        else if command.contains(":TRIG:EXT:") {
-            trigger = redpitaya::acquire::Channel::RP_T_CH_EXT;
-            command.replace(":TRIG:EXT:", ":TRIG:#:")
-        }
-        else {
-            command
-        };
-
         match command.as_str() {
             "ACQ:START" => Command::Start,
             "ACQ:STOP" => Command::Stop,
@@ -144,8 +128,10 @@ impl std::convert::From<String> for Command {
             "ACQ:TRIG:HYST?" => Command::TriggerHystQuery,
             "ACQ:SOUR#:GAIN" => Command::Gain(channel),
             "ACQ:SOUR#:GAIN?" => Command::GainQuery(channel),
-            "ACQ:TRIG:#:LEV" => Command::TriggerLevel(trigger),
-            "ACQ:TRIG:#:LEV?" => Command::TriggerLevelQuery(trigger),
+            "ACQ:TRIG:LEV" => Command::TriggerLevel,
+            "ACQ:TRIG:LEV?" => Command::TriggerLevelQuery,
+            "ACQ:TRIG:EXT:LEV" => Command::TriggerExtLevel,
+            "ACQ:TRIG:EXT:LEV?" => Command::TriggerExtLevelQuery,
             "ACQ:WPOS?" => Command::WposQuery,
             "ACQ:TPOS?" => Command::TposQuery,
             "ACQ:DATA:UNITS" => Command::DataUnits,
@@ -197,8 +183,15 @@ impl crate::Module for Module {
             Command::TriggerHystQuery => self.get_trigger_hyst(),
             Command::Gain(channel) => self.set_gain(channel, args),
             Command::GainQuery(channel) => self.get_gain(channel),
-            Command::TriggerLevel(channel) => self.set_trigger_level(channel, args),
-            Command::TriggerLevelQuery(channel) => self.get_trigger_level(channel),
+            Command::TriggerLevel => {
+                self.set_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_1, args)?;
+                self.set_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_2, args)?;
+
+                Ok(None)
+            },
+            Command::TriggerLevelQuery => self.get_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_1),
+            Command::TriggerExtLevel => self.set_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_EXT, args),
+            Command::TriggerExtLevelQuery => self.get_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_EXT),
             Command::WposQuery => self.get_wpos(),
             Command::TposQuery => self.get_tpos(),
             Command::DataUnits => self.set_data_units(args),
@@ -250,14 +243,14 @@ impl Module {
     }
 
     fn get_decimation(&self) -> crate::Result {
-        match redpitaya::acquire::get_decimation() {
+        match redpitaya::acquire::decimation() {
             Ok(decimation) => Ok(Some(format!("{}", std::convert::Into::<u32>::into(decimation)))),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_sampling_rate(&self) -> crate::Result {
-        match redpitaya::acquire::get_sampling_rate() {
+        match redpitaya::acquire::sampling_rate() {
             Ok(sampling_rate) => Ok(Some(sampling_rate.into())),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -276,7 +269,7 @@ impl Module {
     }
 
     fn get_average(&self) -> crate::Result {
-        let averaging = match redpitaya::acquire::get_averaging() {
+        let averaging = match redpitaya::acquire::averaging() {
             Ok(averaging) => if averaging { "ON" } else { "OFF" },
             Err(err) => return Err(format!("{:?}", err)),
         };
@@ -290,19 +283,19 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::acquire::set_trigger_src(source) {
+        match redpitaya::acquire::trigger::set_source(source) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_trigger_source(&self) -> crate::Result {
-        let state = match redpitaya::acquire::get_trigger_src() {
+        let state = match redpitaya::acquire::trigger::source() {
             Ok(source) => source,
             Err(err) => return Err(format!("{:?}", err)),
         };
 
-        if state == redpitaya::acquire::TrigSrc::RP_TRIG_SRC_DISABLED {
+        if state == redpitaya::acquire::trigger::Source::RP_TRIG_SRC_DISABLED {
             Ok(Some("TD".into()))
         } else {
             Ok(Some("WAIT".into()))
@@ -315,14 +308,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::acquire::set_trigger_delay(delay) {
+        match redpitaya::acquire::trigger::set_delay(delay) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_trigger_delay(&self) -> crate::Result {
-        match redpitaya::acquire::get_trigger_delay() {
+        match redpitaya::acquire::trigger::delay() {
             Ok(delay) => Ok(Some(format!("{}", delay))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -334,14 +327,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::acquire::set_trigger_delay_ns(delay) {
+        match redpitaya::acquire::trigger::set_delay_ns(delay) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_trigger_delay_ns(&self) -> crate::Result {
-        match redpitaya::acquire::get_trigger_delay_ns() {
+        match redpitaya::acquire::trigger::delay_ns() {
             Ok(delay) => Ok(Some(format!("{}", delay))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -353,14 +346,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::acquire::set_trigger_hyst(hyst) {
+        match redpitaya::acquire::trigger::set_hysteresis(hyst) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_trigger_hyst(&self) -> crate::Result {
-        match redpitaya::acquire::get_trigger_hyst() {
+        match redpitaya::acquire::trigger::hysteresis() {
             Ok(hyst) => Ok(Some(format!("{}", hyst))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -379,40 +372,40 @@ impl Module {
     }
 
     fn get_gain(&self, channel: redpitaya::Channel) -> crate::Result {
-        match redpitaya::acquire::get_gain(channel) {
+        match redpitaya::acquire::gain(channel) {
             Ok(gain) => Ok(Some(gain.into())),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
-    fn set_trigger_level(&self, channel: redpitaya::acquire::Channel, args: &[String]) -> crate::Result {
+    fn set_trigger_level(&self, channel: redpitaya::acquire::trigger::Channel, args: &[String]) -> crate::Result {
         let level = match args.get(0) {
             Some(level) => level.clone().parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::acquire::set_trigger_level(channel, level) {
+        match redpitaya::acquire::trigger::set_level(channel, level) {
             Ok(_) => Ok(None),
             Err(err) => return Err(format!("{:?}", err)),
         }
     }
 
-    fn get_trigger_level(&self, channel: redpitaya::acquire::Channel) -> crate::Result {
-        match redpitaya::acquire::get_trigger_level(channel) {
+    fn get_trigger_level(&self, channel: redpitaya::acquire::trigger::Channel) -> crate::Result {
+        match redpitaya::acquire::trigger::level(channel) {
             Ok(level) => Ok(Some(format!("{}", level))),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_wpos(&self) -> crate::Result {
-        match redpitaya::acquire::get_write_pointer() {
+        match redpitaya::acquire::write_pointer() {
             Ok(pos) => Ok(Some(format!("{}", pos))),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_tpos(&self) -> crate::Result {
-        match redpitaya::acquire::get_write_pointer_at_trig() {
+        match redpitaya::acquire::write_pointer_at_trig() {
             Ok(pos) => Ok(Some(format!("{}", pos))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -457,13 +450,13 @@ impl Module {
         };
 
         if Self::get_unit() == Units::Volts {
-            match redpitaya::acquire::get_data_pos_v(channel, start, end) {
+            match redpitaya::acquire::data_pos_v(channel, start, end) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
         }
         else {
-            match redpitaya::acquire::get_data_pos_raw(channel, start, end) {
+            match redpitaya::acquire::data_pos_raw(channel, start, end) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
@@ -482,13 +475,13 @@ impl Module {
         };
 
         if Self::get_unit() == Units::Volts {
-            match redpitaya::acquire::get_data_v(channel, start, size) {
+            match redpitaya::acquire::data_v(channel, start, size) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
         }
         else {
-            match redpitaya::acquire::get_data_raw(channel, start, size) {
+            match redpitaya::acquire::data_raw(channel, start, size) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
@@ -502,13 +495,13 @@ impl Module {
         };
 
         if Self::get_unit() == Units::Volts {
-            match redpitaya::acquire::get_oldest_data_v(channel, size) {
+            match redpitaya::acquire::oldest_data_v(channel, size) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
         }
         else {
-            match redpitaya::acquire::get_oldest_data_raw(channel, size) {
+            match redpitaya::acquire::oldest_data_raw(channel, size) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
@@ -517,7 +510,7 @@ impl Module {
 
     fn get_all_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let mut args = args.to_vec();
-        let size = match redpitaya::acquire::get_buffer_size() {
+        let size = match redpitaya::acquire::buffer_size() {
             Ok(size) => size,
             Err(err) => return Err(format!("{:?}", err)),
         };
@@ -534,13 +527,13 @@ impl Module {
         };
 
         if Self::get_unit() == Units::Volts {
-            match redpitaya::acquire::get_latest_data_v(channel, size) {
+            match redpitaya::acquire::latest_data_v(channel, size) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
         }
         else {
-            match redpitaya::acquire::get_latest_data_raw(channel, size) {
+            match redpitaya::acquire::latest_data_raw(channel, size) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
@@ -548,7 +541,7 @@ impl Module {
     }
 
     fn get_buffer_size(&self) -> crate::Result {
-        match redpitaya::acquire::get_buffer_size() {
+        match redpitaya::acquire::buffer_size() {
             Ok(size) => Ok(Some(format!("{}", size))),
             Err(err) => Err(format!("{:?}", err)),
         }

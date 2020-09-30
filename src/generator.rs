@@ -27,6 +27,7 @@ pub enum Command {
     BurstPeriodQuery(redpitaya::Channel),
     TriggerSource(redpitaya::Channel),
     TriggerSourceQuery(redpitaya::Channel),
+    TriggerAll,
     Trigger(redpitaya::Channel),
     Unknow,
 }
@@ -87,6 +88,7 @@ impl std::convert::From<String> for Command {
             "SOUR#:BURS:INT:PER?" => Command::BurstPeriodQuery(channel),
             "SOUR#:TRIG:SOUR" => Command::TriggerSource(channel),
             "SOUR#:TRIG:SOUR?" => Command::TriggerSourceQuery(channel),
+            "SOUR:TRIG:IMM" => Command::TriggerAll,
             "SOUR#:TRIG:IMM" => Command::Trigger(channel),
             _ => Command::Unknow,
         }
@@ -139,6 +141,12 @@ impl crate::Module for Module {
             Command::BurstPeriodQuery(channel) => self.get_burst_period(channel, args),
             Command::TriggerSource(channel) => self.set_trigger_source(channel, args),
             Command::TriggerSourceQuery(channel) => self.get_trigger_source(channel, args),
+            Command::TriggerAll => {
+                self.trigger(redpitaya::Channel::RP_CH_1, args)?;
+                self.trigger(redpitaya::Channel::RP_CH_2, args)?;
+
+                Ok(None)
+            },
             Command::Trigger(channel) => self.trigger(channel, args),
             Command::Unknow => Err("Unknow command".to_owned()),
         }
@@ -187,14 +195,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::freq(channel, frequency) {
+        match redpitaya::generator::set_freq(channel, frequency) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_frequency(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_freq(channel) {
+        match redpitaya::generator::freq(channel) {
             Ok(frequency) => Ok(Some(format!("{}", frequency))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -206,14 +214,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::waveform(channel, function) {
+        match redpitaya::generator::set_waveform(channel, function) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_function(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_waveform(channel) {
+        match redpitaya::generator::waveform(channel) {
             Ok(function) => Ok(Some(function.into())),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -225,14 +233,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::amp(channel, amplitute) {
+        match redpitaya::generator::set_amp(channel, amplitute) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_amplitude(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_amp(channel) {
+        match redpitaya::generator::amp(channel) {
             Ok(amplitute) => Ok(Some(format!("{}", amplitute))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -244,14 +252,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::offset(channel, offset) {
+        match redpitaya::generator::set_offset(channel, offset) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_offset(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_offset(channel) {
+        match redpitaya::generator::offset(channel) {
             Ok(offset) => Ok(Some(format!("{}", offset))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -263,14 +271,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::phase(channel, phase) {
+        match redpitaya::generator::set_phase(channel, phase) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_phase(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_phase(channel) {
+        match redpitaya::generator::phase(channel) {
             Ok(phase) => Ok(Some(format!("{}", phase))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -282,14 +290,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::duty_cycle(channel, duty_cycle) {
+        match redpitaya::generator::set_duty_cycle(channel, duty_cycle) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_duty_cycle(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_duty_cycle(channel) {
+        match redpitaya::generator::duty_cycle(channel) {
             Ok(duty_cycle) => Ok(Some(format!("{}", duty_cycle))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -306,14 +314,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::arb_waveform(channel, data.as_mut_slice()) {
+        match redpitaya::generator::set_arb_waveform(channel, data.as_mut_slice()) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_abritrary(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_arb_waveform(channel) {
+        match redpitaya::generator::arb_waveform(channel) {
             Ok(data) => {
                 let mut data = data.iter().fold(String::from("{"), |acc, v| {
                         acc + format!("{}", v).as_str() + ","
@@ -333,14 +341,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::mode(channel, mode) {
+        match redpitaya::generator::set_mode(channel, mode) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_mode(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_mode(channel) {
+        match redpitaya::generator::mode(channel) {
             Ok(mode) => Ok(Some(mode.into())),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -352,14 +360,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::burst_count(channel, burs_count) {
+        match redpitaya::generator::set_burst_count(channel, burs_count) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_burst_count(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_burst_count(channel) {
+        match redpitaya::generator::burst_count(channel) {
             Ok(burst_count) => Ok(Some(format!("{}", burst_count))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -371,14 +379,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::burst_repetitions(channel, bust_repetition) {
+        match redpitaya::generator::set_burst_repetitions(channel, bust_repetition) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_burst_repetition(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_burst_repetitions(channel) {
+        match redpitaya::generator::burst_repetitions(channel) {
             Ok(burst_repetition) => Ok(Some(format!("{}", burst_repetition))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -390,14 +398,14 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::burst_period(channel, burst_period) {
+        match redpitaya::generator::set_burst_period(channel, burst_period) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_burst_period(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_burst_period(channel) {
+        match redpitaya::generator::burst_period(channel) {
             Ok(burst_period) => Ok(Some(format!("{}", burst_period))),
             Err(err) => Err(format!("{:?}", err)),
         }
@@ -409,21 +417,21 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::generator::trigger_source(channel, source) {
+        match redpitaya::generator::set_trigger_source(channel, source) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn get_trigger_source(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::get_trigger_source(channel) {
+        match redpitaya::generator::trigger_source(channel) {
             Ok(source) => Ok(Some(source.into())),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
 
     fn trigger(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::trigger(channel) {
+        match redpitaya::generator::trigger_source(channel) {
             Ok(_) => Ok(None),
             Err(err) => Err(format!("{:?}", err)),
         }

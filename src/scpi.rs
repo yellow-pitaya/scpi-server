@@ -45,6 +45,6 @@ impl Module {
     }
 
     fn version() -> crate::Result {
-        Ok(Some(redpitaya::get_version()))
+        Ok(Some(redpitaya::version()))
     }
 }

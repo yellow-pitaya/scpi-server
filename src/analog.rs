@@ -73,7 +73,7 @@ impl Module {
             None => return Err("Missing parameter".to_owned()),
         };
 
-        match redpitaya::pin::analog::get_value(pin) {
+        match redpitaya::pin::analog::value(pin) {
             Ok(value) => Ok(Some(format!("{}", value))),
             Err(err) => Err(format!("{:?}", err)),
         }
