@@ -24,7 +24,8 @@ impl std::convert::From<Units> for String {
             Units::Volts => "VOLTS",
             Units::Raw => "RAW",
             Units::Unknow => unimplemented!(),
-        }.to_owned()
+        }
+        .to_owned()
     }
 }
 
@@ -51,7 +52,8 @@ impl std::convert::From<Formats> for String {
             Formats::Ascii => "Ascii",
             Formats::Binary => "BIN",
             Formats::Unknow => unimplemented!(),
-        }.to_owned()
+        }
+        .to_owned()
     }
 }
 
@@ -100,12 +102,10 @@ impl std::convert::From<String> for Command {
         let command = if s.contains(":SOUR1:") {
             channel = redpitaya::Channel::RP_CH_1;
             s.replace(":SOUR1:", ":SOUR#:")
-        }
-        else if s.contains(":SOUR2:") {
+        } else if s.contains(":SOUR2:") {
             channel = redpitaya::Channel::RP_CH_2;
             s.replace(":SOUR2:", ":SOUR#:")
-        }
-        else {
+        } else {
             s
         };
 
@@ -148,15 +148,13 @@ impl std::convert::From<String> for Command {
     }
 }
 
-pub struct Module {
-}
+pub struct Module {}
 
 impl crate::Module for Module {
     type Command = Command;
 
     fn new() -> Self {
-        Module {
-        }
+        Module {}
     }
 
     fn accept(command: String) -> bool {
@@ -188,10 +186,16 @@ impl crate::Module for Module {
                 self.set_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_2, args)?;
 
                 Ok(None)
-            },
-            Command::TriggerLevelQuery => self.get_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_1),
-            Command::TriggerExtLevel => self.set_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_EXT, args),
-            Command::TriggerExtLevelQuery => self.get_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_EXT),
+            }
+            Command::TriggerLevelQuery => {
+                self.get_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_1)
+            }
+            Command::TriggerExtLevel => {
+                self.set_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_EXT, args)
+            }
+            Command::TriggerExtLevelQuery => {
+                self.get_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_EXT)
+            }
             Command::WposQuery => self.get_wpos(),
             Command::TposQuery => self.get_tpos(),
             Command::DataUnits => self.set_data_units(args),
@@ -244,7 +248,10 @@ impl Module {
 
     fn get_decimation(&self) -> crate::Result {
         match redpitaya::acquire::decimation() {
-            Ok(decimation) => Ok(Some(format!("{}", std::convert::Into::<u32>::into(decimation)))),
+            Ok(decimation) => Ok(Some(format!(
+                "{}",
+                std::convert::Into::<u32>::into(decimation)
+            ))),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
@@ -270,7 +277,13 @@ impl Module {
 
     fn get_average(&self) -> crate::Result {
         let averaging = match redpitaya::acquire::averaging() {
-            Ok(averaging) => if averaging { "ON" } else { "OFF" },
+            Ok(averaging) => {
+                if averaging {
+                    "ON"
+                } else {
+                    "OFF"
+                }
+            }
             Err(err) => return Err(format!("{:?}", err)),
         };
 
@@ -378,7 +391,11 @@ impl Module {
         }
     }
 
-    fn set_trigger_level(&self, channel: redpitaya::acquire::trigger::Channel, args: &[String]) -> crate::Result {
+    fn set_trigger_level(
+        &self,
+        channel: redpitaya::acquire::trigger::Channel,
+        args: &[String],
+    ) -> crate::Result {
         let level = match args.get(0) {
             Some(level) => level.clone().parse().unwrap(),
             None => return Err("Missing parameter".to_owned()),
@@ -410,7 +427,6 @@ impl Module {
             Err(err) => Err(format!("{:?}", err)),
         }
     }
-
 
     fn set_data_units(&mut self, args: &[String]) -> crate::Result {
         let unit = match args.get(0) {
@@ -454,8 +470,7 @@ impl Module {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
-        }
-        else {
+        } else {
             match redpitaya::acquire::data_pos_raw(channel, start, end) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
@@ -479,8 +494,7 @@ impl Module {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
-        }
-        else {
+        } else {
             match redpitaya::acquire::data_raw(channel, start, size) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
@@ -499,8 +513,7 @@ impl Module {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
-        }
-        else {
+        } else {
             match redpitaya::acquire::oldest_data_raw(channel, size) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
@@ -531,8 +544,7 @@ impl Module {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
             }
-        }
-        else {
+        } else {
             match redpitaya::acquire::latest_data_raw(channel, size) {
                 Ok(data) => self.format_data(&data),
                 Err(err) => Err(format!("{:?}", err)),
@@ -547,12 +559,15 @@ impl Module {
         }
     }
 
-    fn format_data<D>(&self, data: &[D]) -> crate::Result where D: std::fmt::Display {
+    fn format_data<D>(&self, data: &[D]) -> crate::Result
+    where
+        D: std::fmt::Display,
+    {
         if Self::get_format() == Formats::Binary {
             unimplemented!();
-        }
-        else {
-            let s = data.iter()
+        } else {
+            let s = data
+                .iter()
                 .map(|c| format!("{}", c))
                 .fold(String::new(), |mut acc, c| {
                     acc.push_str(c.as_str());
@@ -566,26 +581,18 @@ impl Module {
     }
 
     fn get_unit() -> Units {
-        unsafe {
-            UNIT
-        }
+        unsafe { UNIT }
     }
 
     fn set_unit(unit: Units) {
-        unsafe {
-            UNIT = unit
-        }
+        unsafe { UNIT = unit }
     }
 
     fn get_format() -> Formats {
-        unsafe {
-            FORMAT
-        }
+        unsafe { FORMAT }
     }
 
     fn set_format(format: Formats) {
-        unsafe {
-            FORMAT = format
-        }
+        unsafe { FORMAT = format }
     }
 }

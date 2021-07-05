@@ -1,12 +1,12 @@
 #![warn(rust_2018_idioms)]
 
+mod acquire;
+mod analog;
+mod digital;
+mod general;
+mod generator;
 mod ieee;
 mod scpi;
-mod general;
-mod digital;
-mod analog;
-mod acquire;
-mod generator;
 mod server;
 
 type Result = std::result::Result<Option<String>, String>;

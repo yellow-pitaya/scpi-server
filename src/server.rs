@@ -19,26 +19,19 @@ impl std::convert::From<String> for Command {
 
         if crate::ieee::Module::accept(s.clone()) {
             Command::Ieee(s.into())
-        }
-        else if crate::general::Module::accept(s.clone()) {
+        } else if crate::general::Module::accept(s.clone()) {
             Command::General(s.into())
-        }
-        else if crate::digital::Module::accept(s.clone()) {
+        } else if crate::digital::Module::accept(s.clone()) {
             Command::Digital(s.into())
-        }
-        else if crate::analog::Module::accept(s.clone()) {
+        } else if crate::analog::Module::accept(s.clone()) {
             Command::Analog(s.into())
-        }
-        else if crate::acquire::Module::accept(s.clone()) {
+        } else if crate::acquire::Module::accept(s.clone()) {
             Command::Acquire(s.into())
-        }
-        else if crate::generator::Module::accept(s.clone()) {
+        } else if crate::generator::Module::accept(s.clone()) {
             Command::Generator(s.into())
-        }
-        else if crate::scpi::Module::accept(s.clone()) {
+        } else if crate::scpi::Module::accept(s.clone()) {
             Command::Scpi(s.into())
-        }
-        else {
+        } else {
             Command::Error(format!("Unknow command {}", s))
         }
     }
@@ -94,10 +87,9 @@ impl Server {
                 log::debug!("server started");
 
                 listener
-            },
+            }
             Err(err) => panic!("Unable to launch tcp server: {}", err),
         };
-
 
         match redpitaya::init() {
             Ok(_) => log::debug!("init done"),
@@ -119,7 +111,7 @@ impl Server {
                         server.handle_client(stream);
                         log::debug!("Client served");
                     });
-                },
+                }
                 Err(e) => log::error!("failed: {}", e),
             }
         }
@@ -146,13 +138,15 @@ impl Server {
             log::info!("{:?} {:?}", command, args);
 
             match self.execute(command, &args) {
-                Ok(result) => if let Some(response) = result {
-                    responses.push(response);
-                },
+                Ok(result) => {
+                    if let Some(response) = result {
+                        responses.push(response);
+                    }
+                }
                 Err(error) => {
                     log::error!("{}", error);
                     responses.push("ERR!".to_string());
-                },
+                }
             };
         }
 
@@ -160,7 +154,8 @@ impl Server {
     }
 
     fn parse_message(&self, command: &str) -> (Command, Vec<String>) {
-        let args: Vec<String> = command.replace("\r\n", "")
+        let args: Vec<String> = command
+            .replace("\r\n", "")
             .split_whitespace()
             .map(|s| s.to_owned())
             .collect();
@@ -171,11 +166,7 @@ impl Server {
         };
 
         let args = match args.get(1) {
-            Some(args) => {
-                args.split(',')
-                    .map(|s| s.to_owned())
-                    .collect()
-            },
+            Some(args) => args.split(',').map(|s| s.to_owned()).collect(),
             None => Vec::new(),
         };
 
@@ -185,7 +176,8 @@ impl Server {
     fn write(&self, stream: &mut std::net::TcpStream, response: &str) {
         log::debug!("< {}", response);
 
-        stream.write_all(format!("{}\r\n", response).as_bytes())
+        stream
+            .write_all(format!("{}\r\n", response).as_bytes())
             .unwrap();
     }
 }

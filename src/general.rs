@@ -21,15 +21,13 @@ impl std::convert::From<String> for Command {
     }
 }
 
-pub struct Module {
-}
+pub struct Module {}
 
 impl crate::Module for Module {
     type Command = Command;
 
     fn new() -> Self {
-        Module {
-        }
+        Module {}
     }
 
     fn accept(command: String) -> bool {
@@ -50,22 +48,19 @@ impl crate::Module for Module {
 
 impl Module {
     fn init() -> crate::Result {
-        redpitaya::init()
-            .unwrap();
+        redpitaya::init().unwrap();
 
         Ok(None)
     }
 
     fn reset() -> crate::Result {
-        redpitaya::reset()
-            .unwrap();
+        redpitaya::reset().unwrap();
 
         Ok(None)
     }
 
     fn release() -> crate::Result {
-        redpitaya::release()
-            .unwrap();
+        redpitaya::release().unwrap();
 
         Ok(None)
     }
@@ -80,7 +75,12 @@ impl Module {
 
         let mut reader = match std::fs::File::open(&bitstream) {
             Ok(reader) => reader,
-            Err(err) => return Err(format!("Unable to open bitstream file '{}': {}", bitstream, err)),
+            Err(err) => {
+                return Err(format!(
+                    "Unable to open bitstream file '{}': {}",
+                    bitstream, err
+                ))
+            }
         };
 
         let mut writer = match std::fs::File::create("/dev/xdevcfg") {
@@ -97,8 +97,7 @@ impl Module {
     }
 
     fn enable_dig_loop() -> crate::Result {
-        redpitaya::enable_digital_loop(true)
-            .unwrap();
+        redpitaya::enable_digital_loop(true).unwrap();
 
         Ok(None)
     }

@@ -15,15 +15,13 @@ impl std::convert::From<String> for Command {
     }
 }
 
-pub struct Module {
-}
+pub struct Module {}
 
 impl crate::Module for Module {
     type Command = Command;
 
     fn new() -> Self {
-        Module {
-        }
+        Module {}
     }
 
     fn accept(_: String) -> bool {

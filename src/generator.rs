@@ -39,24 +39,20 @@ impl std::convert::From<String> for Command {
         let command = if s.contains("SOUR1:") {
             channel = redpitaya::Channel::RP_CH_1;
             s.replace("SOUR1:", "SOUR#:")
-        }
-        else if s.contains("SOUR2:") {
+        } else if s.contains("SOUR2:") {
             channel = redpitaya::Channel::RP_CH_2;
             s.replace("SOUR2:", "SOUR#:")
-        }
-        else {
+        } else {
             s
         };
 
         let command = if command.contains("OUTPUT1:") {
             channel = redpitaya::Channel::RP_CH_1;
             command.replace("OUTPUT1:", "OUTPUT#:")
-        }
-        else if command.contains("OUTPUT2:") {
+        } else if command.contains("OUTPUT2:") {
             channel = redpitaya::Channel::RP_CH_2;
             command.replace("OUTPUT2:", "OUTPUT#:")
-        }
-        else {
+        } else {
             command
         };
 
@@ -95,21 +91,17 @@ impl std::convert::From<String> for Command {
     }
 }
 
-pub struct Module {
-}
+pub struct Module {}
 
 impl crate::Module for Module {
     type Command = Command;
 
     fn new() -> Self {
-        Module {
-        }
+        Module {}
     }
 
     fn accept(command: String) -> bool {
-        command.starts_with("GEN:")
-            || command.starts_with("OUTPUT")
-            || command.starts_with("SOUR")
+        command.starts_with("GEN:") || command.starts_with("OUTPUT") || command.starts_with("SOUR")
     }
 
     fn execute(&mut self, command: Self::Command, args: &[String]) -> crate::Result {
@@ -146,7 +138,7 @@ impl crate::Module for Module {
                 self.trigger(redpitaya::Channel::RP_CH_2, args)?;
 
                 Ok(None)
-            },
+            }
             Command::Trigger(channel) => self.trigger(channel, args),
             Command::Unknow => Err("Unknow command".to_owned()),
         }
@@ -169,8 +161,7 @@ impl Module {
 
         let result = if state {
             redpitaya::generator::out_enable(channel)
-        }
-        else {
+        } else {
             redpitaya::generator::out_disable(channel)
         };
 
@@ -182,7 +173,13 @@ impl Module {
 
     fn get_state(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let state = match redpitaya::generator::out_is_enable(channel) {
-            Ok(state) => if state { "ON" } else { "OFF" },
+            Ok(state) => {
+                if state {
+                    "ON"
+                } else {
+                    "OFF"
+                }
+            }
             Err(err) => return Err(format!("{:?}", err)),
         };
 
@@ -305,12 +302,11 @@ impl Module {
 
     fn set_abritrary(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let mut data: Vec<f32> = match args.get(0) {
-            Some(data) => {
-                data.trim_matches(|c| c == '{' || c == '}')
-                    .split(',')
-                    .map(|v| v.parse().unwrap())
-                    .collect()
-            }
+            Some(data) => data
+                .trim_matches(|c| c == '{' || c == '}')
+                .split(',')
+                .map(|v| v.parse().unwrap())
+                .collect(),
             None => return Err("Missing parameter".to_owned()),
         };
 
@@ -324,13 +320,13 @@ impl Module {
         match redpitaya::generator::arb_waveform(channel) {
             Ok(data) => {
                 let mut data = data.iter().fold(String::from("{"), |acc, v| {
-                        acc + format!("{}", v).as_str() + ","
-                    });
+                    acc + format!("{}", v).as_str() + ","
+                });
                 data.pop();
                 data.push('}');
 
                 Ok(Some(data))
-            },
+            }
             Err(err) => Err(format!("{:?}", err)),
         }
     }
