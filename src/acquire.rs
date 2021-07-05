@@ -18,9 +18,9 @@ impl std::convert::From<String> for Units {
     }
 }
 
-impl std::convert::Into<String> for Units {
-    fn into(self) -> String {
-        match self {
+impl std::convert::From<Units> for String {
+    fn from(units: Units) -> Self {
+        match units {
             Units::Volts => "VOLTS",
             Units::Raw => "RAW",
             Units::Unknow => unimplemented!(),
@@ -45,9 +45,9 @@ impl std::convert::From<String> for Formats {
     }
 }
 
-impl std::convert::Into<String> for Formats {
-    fn into(self) -> String {
-        match self {
+impl std::convert::From<Formats> for String {
+    fn from(formats: Formats) -> Self {
+        match formats {
             Formats::Ascii => "Ascii",
             Formats::Binary => "BIN",
             Formats::Unknow => unimplemented!(),
