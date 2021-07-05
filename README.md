@@ -2,7 +2,6 @@
 
 [![.github/workflows/ci.yml](https://github.com/yellow-pitaya/scpi-server/actions/workflows/ci.yml/badge.svg)](https://github.com/yellow-pitaya/scpi-server/actions/workflows/ci.yml)
 [![pipeline status](https://gitlab.com/yellow-pitaya/scpi-server/badges/main/pipeline.svg)](https://gitlab.com/yellow-pitaya/scpi-server/-/commits/main)
-[![Build Status](https://travis-ci.org/yellow-pitaya/scpi-server.svg?branch=master)](https://travis-ci.org/yellow-pitaya/scpi-server)
 
 This is a replacement SCPI server for redpitaya.
 
