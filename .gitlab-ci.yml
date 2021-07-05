@@ -1,0 +1,33 @@
+image: "rust:latest"
+
+stages:
+    - lint
+    - test
+
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/cargo
+
+lint:clippy:
+    stage: lint
+    before_script:
+        - rustup component add clippy
+    script: cargo clippy --all-features -- --deny warnings
+
+.test: &test
+    stage: test
+    before_script:
+        - MODE=$(echo "$CI_JOB_NAME" | cut -d ':' -f 2)
+        - test "$MODE" == "release" && CARGO_FLAGS='--release' || CARGO_FLAGS=''
+    script:
+        - cargo test --all-features $CARGO_FLAGS
+
+test:debug:
+    <<: *test
+
+test:release:
+    <<: *test
+
+cache:
+    paths:
+        - $CARGO_HOME
+        - target/
