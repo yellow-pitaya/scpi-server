@@ -2,7 +2,7 @@
 name = "scpi-server"
 version = "1.2.0"
 authors = ["Sanpi <sanpi@homecomputing.fr>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 env_logger = "0.9"
