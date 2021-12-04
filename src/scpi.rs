@@ -32,14 +32,14 @@ impl crate::Module for Module {
         match command {
             Command::Echo => Self::echo(),
             Command::Version => Self::version(),
-            Command::Unknow => Err("Unknow command".to_owned()),
+            Command::Unknow => Err("Unknow command".to_string()),
         }
     }
 }
 
 impl Module {
     fn echo() -> crate::Result {
-        Ok(Some("ECHO?".to_owned()))
+        Ok(Some("ECHO?".to_string()))
     }
 
     fn version() -> crate::Result {

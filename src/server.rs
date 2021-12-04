@@ -157,16 +157,16 @@ impl Server {
         let args: Vec<String> = command
             .replace("\r\n", "")
             .split_whitespace()
-            .map(|s| s.to_owned())
+            .map(|s| s.to_string())
             .collect();
 
         let command = match args.get(0) {
             Some(command) => command.to_string(),
-            None => return (Command::Error("Empty command".to_owned()), Vec::new()),
+            None => return (Command::Error("Empty command".to_string()), Vec::new()),
         };
 
         let args = match args.get(1) {
-            Some(args) => args.split(',').map(|s| s.to_owned()).collect(),
+            Some(args) => args.split(',').map(|s| s.to_string()).collect(),
             None => Vec::new(),
         };
 

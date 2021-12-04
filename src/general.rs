@@ -41,7 +41,7 @@ impl crate::Module for Module {
             Command::Release => Self::release(),
             Command::FpgaBitstream => Self::fpga_bitstream(args),
             Command::EnableDigLoop => Self::enable_dig_loop(),
-            Command::Unknow => Err("Unknow command".to_owned()),
+            Command::Unknow => Err("Unknow command".to_string()),
         }
     }
 }
@@ -68,7 +68,7 @@ impl Module {
     fn fpga_bitstream(args: &[String]) -> crate::Result {
         let version = match args.get(0) {
             Some(version) => version,
-            None => return Err("Missing argument".to_owned()),
+            None => return Err("Missing argument".to_string()),
         };
 
         let bitstream = format!("/opt/redpitaya/fpga/fpga_{}.bit", version);

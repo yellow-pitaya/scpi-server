@@ -140,7 +140,7 @@ impl crate::Module for Module {
                 Ok(None)
             }
             Command::Trigger(channel) => self.trigger(channel, args),
-            Command::Unknow => Err("Unknow command".to_owned()),
+            Command::Unknow => Err("Unknow command".to_string()),
         }
     }
 }
@@ -156,7 +156,7 @@ impl Module {
     fn set_state(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let state = match args.get(0) {
             Some(state) => state == "ON",
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         let result = if state {
@@ -183,13 +183,13 @@ impl Module {
             Err(err) => return Err(format!("{:?}", err)),
         };
 
-        Ok(Some(state.to_owned()))
+        Ok(Some(state.to_string()))
     }
 
     fn set_frequency(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let frequency = match args.get(0) {
             Some(frequency) => frequency.parse().unwrap(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_freq(channel, frequency) {
@@ -208,7 +208,7 @@ impl Module {
     fn set_function(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let function = match args.get(0) {
             Some(function) => function.clone().into(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_waveform(channel, function) {
@@ -227,7 +227,7 @@ impl Module {
     fn set_amplitude(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let amplitute = match args.get(0) {
             Some(amplitute) => amplitute.parse().unwrap(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_amp(channel, amplitute) {
@@ -246,7 +246,7 @@ impl Module {
     fn set_offset(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let offset = match args.get(0) {
             Some(offset) => offset.parse().unwrap(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_offset(channel, offset) {
@@ -265,7 +265,7 @@ impl Module {
     fn set_phase(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let phase = match args.get(0) {
             Some(phase) => phase.parse().unwrap(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_phase(channel, phase) {
@@ -284,7 +284,7 @@ impl Module {
     fn set_duty_cycle(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let duty_cycle = match args.get(0) {
             Some(duty_cycle) => duty_cycle.parse().unwrap(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_duty_cycle(channel, duty_cycle) {
@@ -307,7 +307,7 @@ impl Module {
                 .split(',')
                 .map(|v| v.parse().unwrap())
                 .collect(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_arb_waveform(channel, data.as_mut_slice()) {
@@ -334,7 +334,7 @@ impl Module {
     fn set_mode(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let mode = match args.get(0) {
             Some(mode) => mode.clone().into(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_mode(channel, mode) {
@@ -353,7 +353,7 @@ impl Module {
     fn set_burst_count(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let burs_count = match args.get(0) {
             Some(burs_count) => burs_count.parse().unwrap(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_burst_count(channel, burs_count) {
@@ -372,7 +372,7 @@ impl Module {
     fn set_burst_repetition(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let bust_repetition = match args.get(0) {
             Some(bust_repetition) => bust_repetition.parse().unwrap(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_burst_repetitions(channel, bust_repetition) {
@@ -391,7 +391,7 @@ impl Module {
     fn set_burst_period(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let burst_period = match args.get(0) {
             Some(burst_period) => burst_period.parse().unwrap(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_burst_period(channel, burst_period) {
@@ -410,7 +410,7 @@ impl Module {
     fn set_trigger_source(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let source = match args.get(0) {
             Some(source) => source.clone().into(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::generator::set_trigger_source(channel, source) {

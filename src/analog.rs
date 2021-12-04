@@ -35,7 +35,7 @@ impl crate::Module for Module {
             Command::Reset => Self::reset(args),
             Command::PinValue => Self::set_pin_value(args),
             Command::PinValueQuery => Self::get_pin_value(args),
-            Command::Unknow => Err("Unknow command".to_owned()),
+            Command::Unknow => Err("Unknow command".to_string()),
         }
     }
 }
@@ -51,12 +51,12 @@ impl Module {
     fn set_pin_value(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         let value = match args.get(1) {
             Some(value) => value.parse().unwrap(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::pin::analog::set_value(pin, value) {
@@ -68,7 +68,7 @@ impl Module {
     fn get_pin_value(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
-            None => return Err("Missing parameter".to_owned()),
+            None => return Err("Missing parameter".to_string()),
         };
 
         match redpitaya::pin::analog::value(pin) {
