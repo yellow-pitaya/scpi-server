@@ -167,20 +167,20 @@ impl crate::Module for Module {
             Command::Stop => self.stop(),
             Command::Reset => self.reset(),
             Command::Decimation => self.set_decimation(args),
-            Command::DecimationQuery => self.get_decimation(),
-            Command::SamplingRateQuery => self.get_sampling_rate(),
+            Command::DecimationQuery => self.decimation(),
+            Command::SamplingRateQuery => self.sampling_rate(),
             Command::Average => self.set_average(args),
-            Command::AverageQuery => self.get_average(),
+            Command::AverageQuery => self.average(),
             Command::TriggerSource => self.set_trigger_source(args),
-            Command::TriggerSourceQuery => self.get_trigger_source(),
+            Command::TriggerSourceQuery => self.trigger_source(),
             Command::TriggerDelay => self.set_trigger_delay(args),
-            Command::TriggerDelayQuery => self.get_trigger_delay(),
+            Command::TriggerDelayQuery => self.trigger_delay(),
             Command::TriggerDelayNs => self.set_trigger_delay_ns(args),
-            Command::TriggerDelayNsQuery => self.get_trigger_delay_ns(),
+            Command::TriggerDelayNsQuery => self.trigger_delay_ns(),
             Command::TriggerHyst => self.set_trigger_hyst(args),
-            Command::TriggerHystQuery => self.get_trigger_hyst(),
+            Command::TriggerHystQuery => self.trigger_hyst(),
             Command::Gain(channel) => self.set_gain(channel, args),
-            Command::GainQuery(channel) => self.get_gain(channel),
+            Command::GainQuery(channel) => self.gain(channel),
             Command::TriggerLevel => {
                 self.set_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_1, args)?;
                 self.set_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_2, args)?;
@@ -188,25 +188,25 @@ impl crate::Module for Module {
                 Ok(None)
             }
             Command::TriggerLevelQuery => {
-                self.get_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_1)
+                self.trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_1)
             }
             Command::TriggerExtLevel => {
                 self.set_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_EXT, args)
             }
             Command::TriggerExtLevelQuery => {
-                self.get_trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_EXT)
+                self.trigger_level(redpitaya::acquire::trigger::Channel::RP_T_CH_EXT)
             }
-            Command::WposQuery => self.get_wpos(),
-            Command::TposQuery => self.get_tpos(),
+            Command::WposQuery => self.wpos(),
+            Command::TposQuery => self.tpos(),
             Command::DataUnits => self.set_data_units(args),
-            Command::DataUnitsQuery => self.get_data_units(),
+            Command::DataUnitsQuery => self.data_units(),
             Command::DataFormat => self.set_data_format(args),
-            Command::DataPosQuery(channel) => self.get_data_pos(channel, args),
-            Command::DataQuery(channel) => self.get_data(channel, args),
-            Command::DataOldestQuery(channel) => self.get_oldest_data(channel, args),
-            Command::DataAllQuery(channel) => self.get_all_data(channel, args),
-            Command::DataLatestQuery(channel) => self.get_latest_data(channel, args),
-            Command::BufferSizeQuery => self.get_buffer_size(),
+            Command::DataPosQuery(channel) => self.data_pos(channel, args),
+            Command::DataQuery(channel) => self.data(channel, args),
+            Command::DataOldestQuery(channel) => self.oldest_data(channel, args),
+            Command::DataAllQuery(channel) => self.all_data(channel, args),
+            Command::DataLatestQuery(channel) => self.latest_data(channel, args),
+            Command::BufferSizeQuery => self.buffer_size(),
             Command::Unknow => Err(crate::Error::UnknowCommand),
         }
     }
@@ -242,13 +242,13 @@ impl Module {
         Ok(None)
     }
 
-    fn get_decimation(&self) -> crate::Result {
+    fn decimation(&self) -> crate::Result {
         let decimation = redpitaya::acquire::decimation()?;
 
         Ok(Some(format!("{}", Into::<u32>::into(decimation))))
     }
 
-    fn get_sampling_rate(&self) -> crate::Result {
+    fn sampling_rate(&self) -> crate::Result {
         let sampling_rate = redpitaya::acquire::sampling_rate()?;
 
         Ok(Some(sampling_rate.into()))
@@ -265,7 +265,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_average(&self) -> crate::Result {
+    fn average(&self) -> crate::Result {
         let averaging = if redpitaya::acquire::averaging()? {
             "ON"
         } else {
@@ -286,7 +286,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_trigger_source(&self) -> crate::Result {
+    fn trigger_source(&self) -> crate::Result {
         let source = redpitaya::acquire::trigger::source()?;
 
         if source == redpitaya::acquire::trigger::Source::RP_TRIG_SRC_DISABLED {
@@ -307,7 +307,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_trigger_delay(&self) -> crate::Result {
+    fn trigger_delay(&self) -> crate::Result {
         let delay = redpitaya::acquire::trigger::delay()?;
 
         Ok(Some(format!("{}", delay)))
@@ -324,7 +324,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_trigger_delay_ns(&self) -> crate::Result {
+    fn trigger_delay_ns(&self) -> crate::Result {
         let delay = redpitaya::acquire::trigger::delay_ns()?;
 
         Ok(Some(format!("{}", delay)))
@@ -341,7 +341,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_trigger_hyst(&self) -> crate::Result {
+    fn trigger_hyst(&self) -> crate::Result {
         let hyst = redpitaya::acquire::trigger::hysteresis()?;
 
         Ok(Some(format!("{}", hyst)))
@@ -358,7 +358,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_gain(&self, channel: redpitaya::Channel) -> crate::Result {
+    fn gain(&self, channel: redpitaya::Channel) -> crate::Result {
         let gain = redpitaya::acquire::gain(channel)?;
 
         Ok(Some(gain.into()))
@@ -379,19 +379,19 @@ impl Module {
         Ok(None)
     }
 
-    fn get_trigger_level(&self, channel: redpitaya::acquire::trigger::Channel) -> crate::Result {
+    fn trigger_level(&self, channel: redpitaya::acquire::trigger::Channel) -> crate::Result {
         let level = redpitaya::acquire::trigger::level(channel)?;
 
         Ok(Some(format!("{}", level)))
     }
 
-    fn get_wpos(&self) -> crate::Result {
+    fn wpos(&self) -> crate::Result {
         let pos = redpitaya::acquire::write_pointer()?;
 
         Ok(Some(format!("{}", pos)))
     }
 
-    fn get_tpos(&self) -> crate::Result {
+    fn tpos(&self) -> crate::Result {
         let pos = redpitaya::acquire::write_pointer_at_trig()?;
 
         Ok(Some(format!("{}", pos)))
@@ -408,8 +408,8 @@ impl Module {
         Ok(None)
     }
 
-    fn get_data_units(&self) -> crate::Result {
-        Ok(Some(Self::get_unit().into()))
+    fn data_units(&self) -> crate::Result {
+        Ok(Some(Self::unit().into()))
     }
 
     fn set_data_format(&mut self, args: &[String]) -> crate::Result {
@@ -423,7 +423,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_data_pos(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
+    fn data_pos(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let start = match args.get(0) {
             Some(start) => start.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
@@ -434,7 +434,7 @@ impl Module {
             None => return Err(crate::Error::MissingParameter),
         };
 
-        if Self::get_unit() == Units::Volts {
+        if Self::unit() == Units::Volts {
             let data = redpitaya::acquire::data_pos_v(channel, start, end)?;
             self.format_data(&data)
         } else {
@@ -443,7 +443,7 @@ impl Module {
         }
     }
 
-    fn get_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
+    fn data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let start = match args.get(0) {
             Some(start) => start.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
@@ -454,7 +454,7 @@ impl Module {
             None => return Err(crate::Error::MissingParameter),
         };
 
-        if Self::get_unit() == Units::Volts {
+        if Self::unit() == Units::Volts {
             let data = redpitaya::acquire::data_v(channel, start, size)?;
             self.format_data(&data)
         } else {
@@ -463,13 +463,13 @@ impl Module {
         }
     }
 
-    fn get_oldest_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
+    fn oldest_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let size = match args.get(0) {
             Some(end) => end.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
 
-        if Self::get_unit() == Units::Volts {
+        if Self::unit() == Units::Volts {
             let data = redpitaya::acquire::oldest_data_v(channel, size)?;
             self.format_data(&data)
         } else {
@@ -478,22 +478,22 @@ impl Module {
         }
     }
 
-    fn get_all_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
+    fn all_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let mut args = args.to_vec();
         let size = redpitaya::acquire::buffer_size()?;
 
         args.push(format!("{}", size));
 
-        self.get_oldest_data(channel, &args)
+        self.oldest_data(channel, &args)
     }
 
-    fn get_latest_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
+    fn latest_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let size = match args.get(0) {
             Some(end) => end.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
 
-        if Self::get_unit() == Units::Volts {
+        if Self::unit() == Units::Volts {
             let data = redpitaya::acquire::latest_data_v(channel, size)?;
             self.format_data(&data)
         } else {
@@ -502,7 +502,7 @@ impl Module {
         }
     }
 
-    fn get_buffer_size(&self) -> crate::Result {
+    fn buffer_size(&self) -> crate::Result {
         let size = redpitaya::acquire::buffer_size()?;
 
         Ok(Some(format!("{}", size)))
@@ -512,7 +512,7 @@ impl Module {
     where
         D: std::fmt::Display,
     {
-        if Self::get_format() == Formats::Binary {
+        if Self::format() == Formats::Binary {
             unimplemented!();
         } else {
             let s = data
@@ -529,7 +529,7 @@ impl Module {
         }
     }
 
-    fn get_unit() -> Units {
+    fn unit() -> Units {
         unsafe { UNIT }
     }
 
@@ -537,7 +537,7 @@ impl Module {
         unsafe { UNIT = unit }
     }
 
-    fn get_format() -> Formats {
+    fn format() -> Formats {
         unsafe { FORMAT }
     }
 

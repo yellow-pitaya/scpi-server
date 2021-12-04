@@ -38,9 +38,9 @@ impl crate::Module for Module {
         match command {
             Command::Reset => Self::reset(args),
             Command::PinState => Self::set_pin_state(args),
-            Command::PinStateQuery => Self::get_pin_state(args),
+            Command::PinStateQuery => Self::pin_state(args),
             Command::PinDirection => Self::set_pin_direction(args),
-            Command::PinDirectionQuery => Self::get_pin_direction(args),
+            Command::PinDirectionQuery => Self::pin_direction(args),
             Command::Unknow => Err(crate::Error::UnknowCommand),
         }
     }
@@ -69,7 +69,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_pin_state(args: &[String]) -> crate::Result {
+    fn pin_state(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err(crate::Error::MissingParameter),
@@ -96,7 +96,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_pin_direction(args: &[String]) -> crate::Result {
+    fn pin_direction(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err(crate::Error::MissingParameter),

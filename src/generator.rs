@@ -108,31 +108,31 @@ impl crate::Module for Module {
         match command {
             Command::Reset => self.reset(args),
             Command::State(channel) => self.set_state(channel, args),
-            Command::StateQuery(channel) => self.get_state(channel, args),
+            Command::StateQuery(channel) => self.state(channel, args),
             Command::Frequency(channel) => self.set_frequency(channel, args),
-            Command::FrequencyQuery(channel) => self.get_frequency(channel, args),
+            Command::FrequencyQuery(channel) => self.frequency(channel, args),
             Command::Function(channel) => self.set_function(channel, args),
-            Command::FunctionQuery(channel) => self.get_function(channel, args),
+            Command::FunctionQuery(channel) => self.function(channel, args),
             Command::Amplitude(channel) => self.set_amplitude(channel, args),
-            Command::AmplitudeQuery(channel) => self.get_amplitude(channel, args),
+            Command::AmplitudeQuery(channel) => self.amplitude(channel, args),
             Command::Offset(channel) => self.set_offset(channel, args),
-            Command::OffsetQuery(channel) => self.get_offset(channel, args),
+            Command::OffsetQuery(channel) => self.offset(channel, args),
             Command::Phase(channel) => self.set_phase(channel, args),
-            Command::PhaseQuery(channel) => self.get_phase(channel, args),
+            Command::PhaseQuery(channel) => self.phase(channel, args),
             Command::DutyCycle(channel) => self.set_duty_cycle(channel, args),
-            Command::DutyCycleQuery(channel) => self.get_duty_cycle(channel, args),
+            Command::DutyCycleQuery(channel) => self.duty_cycle(channel, args),
             Command::Arbitrary(channel) => self.set_abritrary(channel, args),
-            Command::ArbitraryQuery(channel) => self.get_abritrary(channel, args),
+            Command::ArbitraryQuery(channel) => self.abritrary(channel, args),
             Command::Mode(channel) => self.set_mode(channel, args),
-            Command::ModeQuery(channel) => self.get_mode(channel, args),
+            Command::ModeQuery(channel) => self.mode(channel, args),
             Command::BurstCount(channel) => self.set_burst_count(channel, args),
-            Command::BurstCountQuery(channel) => self.get_burst_count(channel, args),
+            Command::BurstCountQuery(channel) => self.burst_count(channel, args),
             Command::BurstRepetition(channel) => self.set_burst_repetition(channel, args),
-            Command::BurstRepetitionQuery(channel) => self.get_burst_repetition(channel, args),
+            Command::BurstRepetitionQuery(channel) => self.burst_repetition(channel, args),
             Command::BurstPeriod(channel) => self.set_burst_period(channel, args),
-            Command::BurstPeriodQuery(channel) => self.get_burst_period(channel, args),
+            Command::BurstPeriodQuery(channel) => self.burst_period(channel, args),
             Command::TriggerSource(channel) => self.set_trigger_source(channel, args),
-            Command::TriggerSourceQuery(channel) => self.get_trigger_source(channel, args),
+            Command::TriggerSourceQuery(channel) => self.trigger_source(channel, args),
             Command::TriggerAll => {
                 self.trigger(redpitaya::Channel::RP_CH_1, args)?;
                 self.trigger(redpitaya::Channel::RP_CH_2, args)?;
@@ -167,7 +167,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_state(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn state(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let state = if redpitaya::generator::out_is_enable(channel)? {
             "ON"
         } else {
@@ -188,7 +188,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_frequency(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn frequency(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let freq = redpitaya::generator::freq(channel)?;
 
         Ok(Some(format!("{}", freq)))
@@ -205,7 +205,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_function(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn function(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let function = redpitaya::generator::waveform(channel)?;
 
         Ok(Some(function.into()))
@@ -222,7 +222,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_amplitude(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn amplitude(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let amp = redpitaya::generator::amp(channel)?;
 
         Ok(Some(format!("{}", amp)))
@@ -239,7 +239,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_offset(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn offset(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let offset = redpitaya::generator::offset(channel)?;
 
         Ok(Some(format!("{}", offset)))
@@ -256,7 +256,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_phase(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn phase(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let phase = redpitaya::generator::phase(channel)?;
 
         Ok(Some(format!("{}", phase)))
@@ -273,7 +273,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_duty_cycle(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn duty_cycle(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let duty_cycle = redpitaya::generator::duty_cycle(channel)?;
 
         Ok(Some(format!("{}", duty_cycle)))
@@ -294,7 +294,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_abritrary(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn abritrary(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let waveform = redpitaya::generator::arb_waveform(channel)?;
 
         let mut data = waveform.iter().fold(String::from("{"), |acc, v| {
@@ -317,7 +317,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_mode(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn mode(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let mode = redpitaya::generator::mode(channel)?;
 
         Ok(Some(mode.into()))
@@ -334,7 +334,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_burst_count(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn burst_count(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let burst_count = redpitaya::generator::burst_count(channel)?;
 
         Ok(Some(format!("{}", burst_count)))
@@ -351,7 +351,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_burst_repetition(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn burst_repetition(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let burst_repetition = redpitaya::generator::burst_repetitions(channel)?;
 
         Ok(Some(format!("{}", burst_repetition)))
@@ -368,7 +368,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_burst_period(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn burst_period(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let burst_period = redpitaya::generator::burst_period(channel)?;
 
         Ok(Some(format!("{}", burst_period)))
@@ -385,7 +385,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_trigger_source(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
+    fn trigger_source(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let source = redpitaya::generator::trigger_source(channel)?;
 
         Ok(Some(source.into()))

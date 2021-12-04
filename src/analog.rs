@@ -34,7 +34,7 @@ impl crate::Module for Module {
         match command {
             Command::Reset => Self::reset(args),
             Command::PinValue => Self::set_pin_value(args),
-            Command::PinValueQuery => Self::get_pin_value(args),
+            Command::PinValueQuery => Self::pin_value(args),
             Command::Unknow => Err(crate::Error::UnknowCommand),
         }
     }
@@ -63,7 +63,7 @@ impl Module {
         Ok(None)
     }
 
-    fn get_pin_value(args: &[String]) -> crate::Result {
+    fn pin_value(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
             None => return Err(crate::Error::MissingParameter),
