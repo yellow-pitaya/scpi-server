@@ -12,7 +12,7 @@ mod server;
 type Result = std::result::Result<Option<String>, String>;
 
 trait Module {
-    type Command: std::convert::From<String>;
+    type Command: From<String>;
 
     fn new() -> Self;
     fn accept(command: String) -> bool;

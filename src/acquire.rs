@@ -8,7 +8,7 @@ pub enum Units {
     Unknow,
 }
 
-impl std::convert::From<String> for Units {
+impl From<String> for Units {
     fn from(s: String) -> Self {
         match s.as_str() {
             "VOLTS" => Units::Volts,
@@ -18,7 +18,7 @@ impl std::convert::From<String> for Units {
     }
 }
 
-impl std::convert::From<Units> for String {
+impl From<Units> for String {
     fn from(units: Units) -> Self {
         match units {
             Units::Volts => "VOLTS",
@@ -36,7 +36,7 @@ pub enum Formats {
     Unknow,
 }
 
-impl std::convert::From<String> for Formats {
+impl From<String> for Formats {
     fn from(s: String) -> Self {
         match s.as_str() {
             "ASCII" => Formats::Ascii,
@@ -46,7 +46,7 @@ impl std::convert::From<String> for Formats {
     }
 }
 
-impl std::convert::From<Formats> for String {
+impl From<Formats> for String {
     fn from(formats: Formats) -> Self {
         match formats {
             Formats::Ascii => "Ascii",
@@ -95,7 +95,7 @@ pub enum Command {
     Unknow,
 }
 
-impl std::convert::From<String> for Command {
+impl From<String> for Command {
     fn from(s: String) -> Self {
         let mut channel = redpitaya::Channel::RP_CH_1;
 
@@ -248,10 +248,7 @@ impl Module {
 
     fn get_decimation(&self) -> crate::Result {
         match redpitaya::acquire::decimation() {
-            Ok(decimation) => Ok(Some(format!(
-                "{}",
-                std::convert::Into::<u32>::into(decimation)
-            ))),
+            Ok(decimation) => Ok(Some(format!("{}", Into::<u32>::into(decimation)))),
             Err(err) => Err(format!("{:?}", err)),
         }
     }

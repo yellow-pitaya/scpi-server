@@ -32,7 +32,7 @@ pub enum Command {
     Unknow,
 }
 
-impl std::convert::From<String> for Command {
+impl From<String> for Command {
     fn from(s: String) -> Self {
         let mut channel = redpitaya::Channel::RP_CH_1;
 

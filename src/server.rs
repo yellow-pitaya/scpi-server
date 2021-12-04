@@ -13,7 +13,7 @@ pub enum Command {
     Error(String),
 }
 
-impl std::convert::From<String> for Command {
+impl From<String> for Command {
     fn from(s: String) -> Self {
         let s = s.to_uppercase();
 

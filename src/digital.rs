@@ -8,7 +8,7 @@ pub enum Command {
     Unknow,
 }
 
-impl std::convert::From<String> for Command {
+impl From<String> for Command {
     fn from(s: String) -> Self {
         match s.as_str() {
             "DIG:RST" => Command::Reset,
@@ -78,7 +78,7 @@ impl Module {
         };
 
         match redpitaya::pin::digital::state(pin) {
-            Ok(state) => Ok(Some(format!("{}", std::convert::Into::<u8>::into(state)))),
+            Ok(state) => Ok(Some(format!("{}", Into::<u8>::into(state)))),
             Err(err) => Err(format!("{:?}", err)),
         }
     }
