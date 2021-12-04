@@ -35,45 +35,42 @@ impl crate::Module for Module {
             Command::Reset => Self::reset(args),
             Command::PinValue => Self::set_pin_value(args),
             Command::PinValueQuery => Self::get_pin_value(args),
-            Command::Unknow => Err("Unknow command".to_string()),
+            Command::Unknow => Err(crate::Error::UnknowCommand),
         }
     }
 }
 
 impl Module {
     fn reset(_: &[String]) -> crate::Result {
-        match redpitaya::pin::analog::reset() {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::pin::analog::reset()?;
+
+        Ok(None)
     }
 
     fn set_pin_value(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         let value = match args.get(1) {
             Some(value) => value.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::pin::analog::set_value(pin, value) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::pin::analog::set_value(pin, value)?;
+
+        Ok(None)
     }
 
     fn get_pin_value(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::pin::analog::value(pin) {
-            Ok(value) => Ok(Some(format!("{}", value))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let value = redpitaya::pin::analog::value(pin)?;
+
+        Ok(Some(format!("{}", value)))
     }
 }

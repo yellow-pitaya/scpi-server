@@ -32,7 +32,7 @@ impl crate::Module for Module {
         match command {
             Command::Echo => Self::echo(),
             Command::Version => Self::version(),
-            Command::Unknow => Err("Unknow command".to_string()),
+            Command::Unknow => Err(crate::Error::UnknowCommand),
         }
     }
 }

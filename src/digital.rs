@@ -41,74 +41,69 @@ impl crate::Module for Module {
             Command::PinStateQuery => Self::get_pin_state(args),
             Command::PinDirection => Self::set_pin_direction(args),
             Command::PinDirectionQuery => Self::get_pin_direction(args),
-            Command::Unknow => Err("Unknow command".to_string()),
+            Command::Unknow => Err(crate::Error::UnknowCommand),
         }
     }
 }
 
 impl Module {
     fn reset(_: &[String]) -> crate::Result {
-        match redpitaya::pin::digital::reset() {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::pin::digital::reset()?;
+
+        Ok(None)
     }
 
     fn set_pin_state(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         let state = match args.get(1) {
             Some(state) => state.parse::<u8>().unwrap().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::pin::digital::set_state(pin, state) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::pin::digital::set_state(pin, state)?;
+
+        Ok(None)
     }
 
     fn get_pin_state(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::pin::digital::state(pin) {
-            Ok(state) => Ok(Some(format!("{}", Into::<u8>::into(state)))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let state = redpitaya::pin::digital::state(pin)?;
+
+        Ok(Some(format!("{}", Into::<u8>::into(state))))
     }
 
     fn set_pin_direction(args: &[String]) -> crate::Result {
         let direction = match args.get(0) {
             Some(direction) => direction.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         let pin = match args.get(1) {
             Some(pin) => pin.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::pin::digital::set_direction(pin, direction) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::pin::digital::set_direction(pin, direction)?;
+
+        Ok(None)
     }
 
     fn get_pin_direction(args: &[String]) -> crate::Result {
         let pin = match args.get(0) {
             Some(pin) => pin.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::pin::digital::direction(pin) {
-            Ok(direction) => Ok(Some(direction.into())),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let direction = redpitaya::pin::digital::direction(pin)?;
+
+        Ok(Some(direction.into()))
     }
 }

@@ -31,7 +31,7 @@ impl crate::Module for Module {
     fn execute(&mut self, command: Self::Command, _: &[String]) -> crate::Result {
         match command {
             Command::Idn => Self::idn(),
-            Command::Unknow => Err("Unknow command".to_string()),
+            Command::Unknow => Err(crate::Error::UnknowCommand),
         }
     }
 }

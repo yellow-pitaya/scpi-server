@@ -3,13 +3,14 @@
 mod acquire;
 mod analog;
 mod digital;
+mod errors;
 mod general;
 mod generator;
 mod ieee;
 mod scpi;
 mod server;
 
-type Result = std::result::Result<Option<String>, String>;
+pub use errors::*;
 
 trait Module {
     type Command: From<String>;
@@ -19,8 +20,8 @@ trait Module {
     fn execute(&mut self, command: Self::Command, args: &[String]) -> Result;
 }
 
-fn main() {
+fn main() -> Result<()> {
     env_logger::init();
 
-    server::Server::launch();
+    server::Server::launch()
 }

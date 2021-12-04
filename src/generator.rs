@@ -140,164 +140,143 @@ impl crate::Module for Module {
                 Ok(None)
             }
             Command::Trigger(channel) => self.trigger(channel, args),
-            Command::Unknow => Err("Unknow command".to_string()),
+            Command::Unknow => Err(crate::Error::UnknowCommand),
         }
     }
 }
 
 impl Module {
     fn reset(&self, _: &[String]) -> crate::Result {
-        match redpitaya::generator::reset() {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::reset()?;
+
+        Ok(None)
     }
 
     fn set_state(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let state = match args.get(0) {
             Some(state) => state == "ON",
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        let result = if state {
-            redpitaya::generator::out_enable(channel)
+        if state {
+            redpitaya::generator::out_enable(channel)?;
         } else {
-            redpitaya::generator::out_disable(channel)
-        };
-
-        match result {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
+            redpitaya::generator::out_disable(channel)?;
         }
+
+        Ok(None)
     }
 
     fn get_state(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        let state = match redpitaya::generator::out_is_enable(channel) {
-            Ok(state) => {
-                if state {
-                    "ON"
-                } else {
-                    "OFF"
-                }
-            }
-            Err(err) => return Err(format!("{:?}", err)),
+        let state = if redpitaya::generator::out_is_enable(channel)? {
+            "ON"
+        } else {
+            "OFF"
         };
 
         Ok(Some(state.to_string()))
     }
 
     fn set_frequency(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let frequency = match args.get(0) {
-            Some(frequency) => frequency.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+        let freq = match args.get(0) {
+            Some(freq) => freq.parse().unwrap(),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_freq(channel, frequency) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_freq(channel, freq)?;
+
+        Ok(None)
     }
 
     fn get_frequency(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::freq(channel) {
-            Ok(frequency) => Ok(Some(format!("{}", frequency))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let freq = redpitaya::generator::freq(channel)?;
+
+        Ok(Some(format!("{}", freq)))
     }
 
     fn set_function(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let function = match args.get(0) {
             Some(function) => function.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_waveform(channel, function) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_waveform(channel, function)?;
+
+        Ok(None)
     }
 
     fn get_function(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::waveform(channel) {
-            Ok(function) => Ok(Some(function.into())),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let function = redpitaya::generator::waveform(channel)?;
+
+        Ok(Some(function.into()))
     }
 
     fn set_amplitude(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let amplitute = match args.get(0) {
-            Some(amplitute) => amplitute.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+        let amp = match args.get(0) {
+            Some(amp) => amp.parse().unwrap(),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_amp(channel, amplitute) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_amp(channel, amp)?;
+
+        Ok(None)
     }
 
     fn get_amplitude(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::amp(channel) {
-            Ok(amplitute) => Ok(Some(format!("{}", amplitute))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let amp = redpitaya::generator::amp(channel)?;
+
+        Ok(Some(format!("{}", amp)))
     }
 
     fn set_offset(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let offset = match args.get(0) {
             Some(offset) => offset.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_offset(channel, offset) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_offset(channel, offset)?;
+
+        Ok(None)
     }
 
     fn get_offset(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::offset(channel) {
-            Ok(offset) => Ok(Some(format!("{}", offset))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let offset = redpitaya::generator::offset(channel)?;
+
+        Ok(Some(format!("{}", offset)))
     }
 
     fn set_phase(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let phase = match args.get(0) {
             Some(phase) => phase.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_phase(channel, phase) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_phase(channel, phase)?;
+
+        Ok(None)
     }
 
     fn get_phase(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::phase(channel) {
-            Ok(phase) => Ok(Some(format!("{}", phase))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let phase = redpitaya::generator::phase(channel)?;
+
+        Ok(Some(format!("{}", phase)))
     }
 
     fn set_duty_cycle(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let duty_cycle = match args.get(0) {
             Some(duty_cycle) => duty_cycle.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_duty_cycle(channel, duty_cycle) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_duty_cycle(channel, duty_cycle)?;
+
+        Ok(None)
     }
 
     fn get_duty_cycle(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::duty_cycle(channel) {
-            Ok(duty_cycle) => Ok(Some(format!("{}", duty_cycle))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let duty_cycle = redpitaya::generator::duty_cycle(channel)?;
+
+        Ok(Some(format!("{}", duty_cycle)))
     }
 
     fn set_abritrary(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
@@ -307,129 +286,114 @@ impl Module {
                 .split(',')
                 .map(|v| v.parse().unwrap())
                 .collect(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_arb_waveform(channel, data.as_mut_slice()) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_arb_waveform(channel, data.as_mut_slice())?;
+
+        Ok(None)
     }
 
     fn get_abritrary(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::arb_waveform(channel) {
-            Ok(data) => {
-                let mut data = data.iter().fold(String::from("{"), |acc, v| {
-                    acc + format!("{}", v).as_str() + ","
-                });
-                data.pop();
-                data.push('}');
+        let waveform = redpitaya::generator::arb_waveform(channel)?;
 
-                Ok(Some(data))
-            }
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let mut data = waveform.iter().fold(String::from("{"), |acc, v| {
+            acc + format!("{}", v).as_str() + ","
+        });
+        data.pop();
+        data.push('}');
+
+        Ok(Some(data))
     }
 
     fn set_mode(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let mode = match args.get(0) {
             Some(mode) => mode.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_mode(channel, mode) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_mode(channel, mode)?;
+
+        Ok(None)
     }
 
     fn get_mode(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::mode(channel) {
-            Ok(mode) => Ok(Some(mode.into())),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let mode = redpitaya::generator::mode(channel)?;
+
+        Ok(Some(mode.into()))
     }
 
     fn set_burst_count(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let burs_count = match args.get(0) {
             Some(burs_count) => burs_count.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_burst_count(channel, burs_count) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_burst_count(channel, burs_count)?;
+
+        Ok(None)
     }
 
     fn get_burst_count(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::burst_count(channel) {
-            Ok(burst_count) => Ok(Some(format!("{}", burst_count))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let burst_count = redpitaya::generator::burst_count(channel)?;
+
+        Ok(Some(format!("{}", burst_count)))
     }
 
     fn set_burst_repetition(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let bust_repetition = match args.get(0) {
             Some(bust_repetition) => bust_repetition.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_burst_repetitions(channel, bust_repetition) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_burst_repetitions(channel, bust_repetition)?;
+
+        Ok(None)
     }
 
     fn get_burst_repetition(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::burst_repetitions(channel) {
-            Ok(burst_repetition) => Ok(Some(format!("{}", burst_repetition))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let burst_repetition = redpitaya::generator::burst_repetitions(channel)?;
+
+        Ok(Some(format!("{}", burst_repetition)))
     }
 
     fn set_burst_period(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let burst_period = match args.get(0) {
             Some(burst_period) => burst_period.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_burst_period(channel, burst_period) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_burst_period(channel, burst_period)?;
+
+        Ok(None)
     }
 
     fn get_burst_period(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::burst_period(channel) {
-            Ok(burst_period) => Ok(Some(format!("{}", burst_period))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let burst_period = redpitaya::generator::burst_period(channel)?;
+
+        Ok(Some(format!("{}", burst_period)))
     }
 
     fn set_trigger_source(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let source = match args.get(0) {
             Some(source) => source.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::generator::set_trigger_source(channel, source) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::set_trigger_source(channel, source)?;
+
+        Ok(None)
     }
 
     fn get_trigger_source(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::trigger_source(channel) {
-            Ok(source) => Ok(Some(source.into())),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let source = redpitaya::generator::trigger_source(channel)?;
+
+        Ok(Some(source.into()))
     }
 
     fn trigger(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
-        match redpitaya::generator::trigger_source(channel) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::generator::trigger_source(channel)?;
+
+        Ok(None)
     }
 }

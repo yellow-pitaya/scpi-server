@@ -207,81 +207,69 @@ impl crate::Module for Module {
             Command::DataAllQuery(channel) => self.get_all_data(channel, args),
             Command::DataLatestQuery(channel) => self.get_latest_data(channel, args),
             Command::BufferSizeQuery => self.get_buffer_size(),
-            Command::Unknow => Err("Unknow command".to_string()),
+            Command::Unknow => Err(crate::Error::UnknowCommand),
         }
     }
 }
 
 impl Module {
     fn start(&self) -> crate::Result {
-        match redpitaya::acquire::start() {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::start()?;
+
+        Ok(None)
     }
 
     fn stop(&self) -> crate::Result {
-        match redpitaya::acquire::stop() {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::stop()?;
+
+        Ok(None)
     }
 
     fn reset(&self) -> crate::Result {
-        match redpitaya::acquire::reset() {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::reset()?;
+
+        Ok(None)
     }
 
     fn set_decimation(&self, args: &[String]) -> crate::Result {
         let decimation = match args.get(0) {
             Some(decimation) => decimation.parse::<u32>().unwrap().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::acquire::set_decimation(decimation) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::set_decimation(decimation)?;
+
+        Ok(None)
     }
 
     fn get_decimation(&self) -> crate::Result {
-        match redpitaya::acquire::decimation() {
-            Ok(decimation) => Ok(Some(format!("{}", Into::<u32>::into(decimation)))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let decimation = redpitaya::acquire::decimation()?;
+
+        Ok(Some(format!("{}", Into::<u32>::into(decimation))))
     }
 
     fn get_sampling_rate(&self) -> crate::Result {
-        match redpitaya::acquire::sampling_rate() {
-            Ok(sampling_rate) => Ok(Some(sampling_rate.into())),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let sampling_rate = redpitaya::acquire::sampling_rate()?;
+
+        Ok(Some(sampling_rate.into()))
     }
 
     fn set_average(&self, args: &[String]) -> crate::Result {
         let average = match args.get(0) {
             Some(average) => average.as_str() == "ON",
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::acquire::set_averaging(average) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::set_averaging(average)?;
+
+        Ok(None)
     }
 
     fn get_average(&self) -> crate::Result {
-        let averaging = match redpitaya::acquire::averaging() {
-            Ok(averaging) => {
-                if averaging {
-                    "ON"
-                } else {
-                    "OFF"
-                }
-            }
-            Err(err) => return Err(format!("{:?}", err)),
+        let averaging = if redpitaya::acquire::averaging()? {
+            "ON"
+        } else {
+            "OFF"
         };
 
         Ok(Some(averaging.to_string()))
@@ -290,22 +278,18 @@ impl Module {
     fn set_trigger_source(&self, args: &[String]) -> crate::Result {
         let source = match args.get(0) {
             Some(source) => source.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::acquire::trigger::set_source(source) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::trigger::set_source(source)?;
+
+        Ok(None)
     }
 
     fn get_trigger_source(&self) -> crate::Result {
-        let state = match redpitaya::acquire::trigger::source() {
-            Ok(source) => source,
-            Err(err) => return Err(format!("{:?}", err)),
-        };
+        let source = redpitaya::acquire::trigger::source()?;
 
-        if state == redpitaya::acquire::trigger::Source::RP_TRIG_SRC_DISABLED {
+        if source == redpitaya::acquire::trigger::Source::RP_TRIG_SRC_DISABLED {
             Ok(Some("TD".into()))
         } else {
             Ok(Some("WAIT".into()))
@@ -315,77 +299,69 @@ impl Module {
     fn set_trigger_delay(&self, args: &[String]) -> crate::Result {
         let delay = match args.get(0) {
             Some(delay) => delay.clone().parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::acquire::trigger::set_delay(delay) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::trigger::set_delay(delay)?;
+
+        Ok(None)
     }
 
     fn get_trigger_delay(&self) -> crate::Result {
-        match redpitaya::acquire::trigger::delay() {
-            Ok(delay) => Ok(Some(format!("{}", delay))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let delay = redpitaya::acquire::trigger::delay()?;
+
+        Ok(Some(format!("{}", delay)))
     }
 
     fn set_trigger_delay_ns(&self, args: &[String]) -> crate::Result {
         let delay = match args.get(0) {
             Some(delay) => delay.clone().parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::acquire::trigger::set_delay_ns(delay) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::trigger::set_delay_ns(delay)?;
+
+        Ok(None)
     }
 
     fn get_trigger_delay_ns(&self) -> crate::Result {
-        match redpitaya::acquire::trigger::delay_ns() {
-            Ok(delay) => Ok(Some(format!("{}", delay))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let delay = redpitaya::acquire::trigger::delay_ns()?;
+
+        Ok(Some(format!("{}", delay)))
     }
 
     fn set_trigger_hyst(&self, args: &[String]) -> crate::Result {
         let hyst = match args.get(0) {
             Some(hyst) => hyst.clone().parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::acquire::trigger::set_hysteresis(hyst) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::trigger::set_hysteresis(hyst)?;
+
+        Ok(None)
     }
 
     fn get_trigger_hyst(&self) -> crate::Result {
-        match redpitaya::acquire::trigger::hysteresis() {
-            Ok(hyst) => Ok(Some(format!("{}", hyst))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let hyst = redpitaya::acquire::trigger::hysteresis()?;
+
+        Ok(Some(format!("{}", hyst)))
     }
 
     fn set_gain(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let gain = match args.get(0) {
             Some(gain) => gain.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::acquire::set_gain(channel, gain) {
-            Ok(_) => Ok(None),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::set_gain(channel, gain)?;
+
+        Ok(None)
     }
 
     fn get_gain(&self, channel: redpitaya::Channel) -> crate::Result {
-        match redpitaya::acquire::gain(channel) {
-            Ok(gain) => Ok(Some(gain.into())),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let gain = redpitaya::acquire::gain(channel)?;
+
+        Ok(Some(gain.into()))
     }
 
     fn set_trigger_level(
@@ -395,40 +371,36 @@ impl Module {
     ) -> crate::Result {
         let level = match args.get(0) {
             Some(level) => level.clone().parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
-        match redpitaya::acquire::trigger::set_level(channel, level) {
-            Ok(_) => Ok(None),
-            Err(err) => return Err(format!("{:?}", err)),
-        }
+        redpitaya::acquire::trigger::set_level(channel, level)?;
+
+        Ok(None)
     }
 
     fn get_trigger_level(&self, channel: redpitaya::acquire::trigger::Channel) -> crate::Result {
-        match redpitaya::acquire::trigger::level(channel) {
-            Ok(level) => Ok(Some(format!("{}", level))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let level = redpitaya::acquire::trigger::level(channel)?;
+
+        Ok(Some(format!("{}", level)))
     }
 
     fn get_wpos(&self) -> crate::Result {
-        match redpitaya::acquire::write_pointer() {
-            Ok(pos) => Ok(Some(format!("{}", pos))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let pos = redpitaya::acquire::write_pointer()?;
+
+        Ok(Some(format!("{}", pos)))
     }
 
     fn get_tpos(&self) -> crate::Result {
-        match redpitaya::acquire::write_pointer_at_trig() {
-            Ok(pos) => Ok(Some(format!("{}", pos))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let pos = redpitaya::acquire::write_pointer_at_trig()?;
+
+        Ok(Some(format!("{}", pos)))
     }
 
     fn set_data_units(&mut self, args: &[String]) -> crate::Result {
         let unit = match args.get(0) {
             Some(arg) => arg.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         Self::set_unit(unit);
@@ -443,7 +415,7 @@ impl Module {
     fn set_data_format(&mut self, args: &[String]) -> crate::Result {
         let format = match args.get(0) {
             Some(format) => format.clone().into(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         Self::set_format(format);
@@ -454,76 +426,61 @@ impl Module {
     fn get_data_pos(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let start = match args.get(0) {
             Some(start) => start.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         let end = match args.get(1) {
             Some(end) => end.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         if Self::get_unit() == Units::Volts {
-            match redpitaya::acquire::data_pos_v(channel, start, end) {
-                Ok(data) => self.format_data(&data),
-                Err(err) => Err(format!("{:?}", err)),
-            }
+            let data = redpitaya::acquire::data_pos_v(channel, start, end)?;
+            self.format_data(&data)
         } else {
-            match redpitaya::acquire::data_pos_raw(channel, start, end) {
-                Ok(data) => self.format_data(&data),
-                Err(err) => Err(format!("{:?}", err)),
-            }
+            let data = redpitaya::acquire::data_pos_raw(channel, start, end)?;
+            self.format_data(&data)
         }
     }
 
     fn get_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let start = match args.get(0) {
             Some(start) => start.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         let size = match args.get(1) {
             Some(end) => end.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         if Self::get_unit() == Units::Volts {
-            match redpitaya::acquire::data_v(channel, start, size) {
-                Ok(data) => self.format_data(&data),
-                Err(err) => Err(format!("{:?}", err)),
-            }
+            let data = redpitaya::acquire::data_v(channel, start, size)?;
+            self.format_data(&data)
         } else {
-            match redpitaya::acquire::data_raw(channel, start, size) {
-                Ok(data) => self.format_data(&data),
-                Err(err) => Err(format!("{:?}", err)),
-            }
+            let data = redpitaya::acquire::data_raw(channel, start, size)?;
+            self.format_data(&data)
         }
     }
 
     fn get_oldest_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let size = match args.get(0) {
             Some(end) => end.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         if Self::get_unit() == Units::Volts {
-            match redpitaya::acquire::oldest_data_v(channel, size) {
-                Ok(data) => self.format_data(&data),
-                Err(err) => Err(format!("{:?}", err)),
-            }
+            let data = redpitaya::acquire::oldest_data_v(channel, size)?;
+            self.format_data(&data)
         } else {
-            match redpitaya::acquire::oldest_data_raw(channel, size) {
-                Ok(data) => self.format_data(&data),
-                Err(err) => Err(format!("{:?}", err)),
-            }
+            let data = redpitaya::acquire::oldest_data_raw(channel, size)?;
+            self.format_data(&data)
         }
     }
 
     fn get_all_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let mut args = args.to_vec();
-        let size = match redpitaya::acquire::buffer_size() {
-            Ok(size) => size,
-            Err(err) => return Err(format!("{:?}", err)),
-        };
+        let size = redpitaya::acquire::buffer_size()?;
 
         args.push(format!("{}", size));
 
@@ -533,27 +490,22 @@ impl Module {
     fn get_latest_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
         let size = match args.get(0) {
             Some(end) => end.parse().unwrap(),
-            None => return Err("Missing parameter".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         if Self::get_unit() == Units::Volts {
-            match redpitaya::acquire::latest_data_v(channel, size) {
-                Ok(data) => self.format_data(&data),
-                Err(err) => Err(format!("{:?}", err)),
-            }
+            let data = redpitaya::acquire::latest_data_v(channel, size)?;
+            self.format_data(&data)
         } else {
-            match redpitaya::acquire::latest_data_raw(channel, size) {
-                Ok(data) => self.format_data(&data),
-                Err(err) => Err(format!("{:?}", err)),
-            }
+            let data = redpitaya::acquire::latest_data_raw(channel, size)?;
+            self.format_data(&data)
         }
     }
 
     fn get_buffer_size(&self) -> crate::Result {
-        match redpitaya::acquire::buffer_size() {
-            Ok(size) => Ok(Some(format!("{}", size))),
-            Err(err) => Err(format!("{:?}", err)),
-        }
+        let size = redpitaya::acquire::buffer_size()?;
+
+        Ok(Some(format!("{}", size)))
     }
 
     fn format_data<D>(&self, data: &[D]) -> crate::Result

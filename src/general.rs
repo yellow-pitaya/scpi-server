@@ -41,26 +41,26 @@ impl crate::Module for Module {
             Command::Release => Self::release(),
             Command::FpgaBitstream => Self::fpga_bitstream(args),
             Command::EnableDigLoop => Self::enable_dig_loop(),
-            Command::Unknow => Err("Unknow command".to_string()),
+            Command::Unknow => Err(crate::Error::UnknowCommand),
         }
     }
 }
 
 impl Module {
     fn init() -> crate::Result {
-        redpitaya::init().unwrap();
+        redpitaya::init()?;
 
         Ok(None)
     }
 
     fn reset() -> crate::Result {
-        redpitaya::reset().unwrap();
+        redpitaya::reset()?;
 
         Ok(None)
     }
 
     fn release() -> crate::Result {
-        redpitaya::release().unwrap();
+        redpitaya::release()?;
 
         Ok(None)
     }
@@ -68,30 +68,15 @@ impl Module {
     fn fpga_bitstream(args: &[String]) -> crate::Result {
         let version = match args.get(0) {
             Some(version) => version,
-            None => return Err("Missing argument".to_string()),
+            None => return Err(crate::Error::MissingParameter),
         };
 
         let bitstream = format!("/opt/redpitaya/fpga/fpga_{}.bit", version);
 
-        let mut reader = match std::fs::File::open(&bitstream) {
-            Ok(reader) => reader,
-            Err(err) => {
-                return Err(format!(
-                    "Unable to open bitstream file '{}': {}",
-                    bitstream, err
-                ))
-            }
-        };
+        let mut reader = std::fs::File::open(&bitstream)?;
+        let mut writer = std::fs::File::create("/dev/xdevcfg")?;
 
-        let mut writer = match std::fs::File::create("/dev/xdevcfg") {
-            Ok(reader) => reader,
-            Err(err) => return Err(format!("Unable to open xdevcfg device: {}", err)),
-        };
-
-        match std::io::copy(&mut reader, &mut writer) {
-            Ok(reader) => reader,
-            Err(err) => return Err(format!("Unable to copy bitstream: {}", err)),
-        };
+        std::io::copy(&mut reader, &mut writer)?;
 
         Ok(None)
     }

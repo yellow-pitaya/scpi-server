@@ -75,31 +75,21 @@ impl crate::Module for Server {
             Command::Analog(command) => self.analog.execute(command, args),
             Command::Acquire(command) => self.acquire.execute(command, args),
             Command::Generator(command) => self.generator.execute(command, args),
-            Command::Error(message) => Err(message),
+            Command::Error(message) => Err(crate::Error::Misc(message)),
         }
     }
 }
 
 impl Server {
-    pub fn launch() {
-        let listener = match std::net::TcpListener::bind("0.0.0.0:5000") {
-            Ok(listener) => {
-                log::debug!("server started");
+    pub fn launch() -> crate::Result<()> {
+        let listener = std::net::TcpListener::bind("0.0.0.0:5000")?;
+        log::debug!("server started");
 
-                listener
-            }
-            Err(err) => panic!("Unable to launch tcp server: {}", err),
-        };
+        redpitaya::init()?;
+        log::debug!("init done");
 
-        match redpitaya::init() {
-            Ok(_) => log::debug!("init done"),
-            Err(err) => panic!("Unable to init: {}", err),
-        };
-
-        match redpitaya::reset() {
-            Ok(_) => log::debug!("reset done"),
-            Err(err) => panic!("Unable to reset: {}", err),
-        };
+        redpitaya::reset()?;
+        log::debug!("reset done");
 
         for stream in listener.incoming() {
             log::debug!("New client");
@@ -115,6 +105,8 @@ impl Server {
                 Err(e) => log::error!("failed: {}", e),
             }
         }
+
+        Ok(())
     }
 
     fn handle_client(&mut self, mut stream: std::net::TcpStream) {

@@ -8,6 +8,7 @@ edition = "2021"
 env_logger = "0.9"
 log = "0.4"
 redpitaya = "0.31"
+thiserror = "1.0"
 
 [features]
 default = []
