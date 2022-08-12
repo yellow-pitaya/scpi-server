@@ -1,7 +1,7 @@
 static mut UNIT: Units = Units::Volts;
 static mut FORMAT: Formats = Formats::Ascii;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Units {
     Volts,
     Raw,
@@ -29,7 +29,7 @@ impl From<Units> for String {
     }
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Formats {
     Ascii,
     Binary,
