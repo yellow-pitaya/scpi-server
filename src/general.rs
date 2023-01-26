@@ -71,9 +71,9 @@ impl Module {
             None => return Err(crate::Error::MissingParameter),
         };
 
-        let bitstream = format!("/opt/redpitaya/fpga/fpga_{}.bit", version);
+        let bitstream = format!("/opt/redpitaya/fpga/fpga_{version}.bit");
 
-        let mut reader = std::fs::File::open(&bitstream)?;
+        let mut reader = std::fs::File::open(bitstream)?;
         let mut writer = std::fs::File::create("/dev/xdevcfg")?;
 
         std::io::copy(&mut reader, &mut writer)?;

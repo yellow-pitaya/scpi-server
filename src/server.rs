@@ -32,7 +32,7 @@ impl From<String> for Command {
         } else if crate::scpi::Module::accept(s.clone()) {
             Command::Scpi(s.into())
         } else {
-            Command::Error(format!("Unknow command {}", s))
+            Command::Error(format!("Unknow command {s}"))
         }
     }
 }
@@ -125,9 +125,9 @@ impl Server {
         let mut responses = Vec::new();
 
         for message in line.split(';') {
-            log::debug!("> {:?}", message);
+            log::debug!("> {message:?}");
             let (command, args) = self.parse_message(message);
-            log::info!("{:?} {:?}", command, args);
+            log::info!("{command:?} {args:?}");
 
             match self.execute(command, &args) {
                 Ok(result) => {
@@ -136,7 +136,7 @@ impl Server {
                     }
                 }
                 Err(error) => {
-                    log::error!("{}", error);
+                    log::error!("{error}");
                     responses.push("ERR!".to_string());
                 }
             };
@@ -166,10 +166,10 @@ impl Server {
     }
 
     fn write(&self, stream: &mut std::net::TcpStream, response: &str) {
-        log::debug!("< {}", response);
+        log::debug!("< {response}");
 
         stream
-            .write_all(format!("{}\r\n", response).as_bytes())
+            .write_all(format!("{response}\r\n").as_bytes())
             .unwrap();
     }
 }

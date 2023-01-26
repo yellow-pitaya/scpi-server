@@ -191,7 +191,7 @@ impl Module {
     fn frequency(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let freq = redpitaya::generator::freq(channel)?;
 
-        Ok(Some(format!("{}", freq)))
+        Ok(Some(freq.to_string()))
     }
 
     fn set_function(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
@@ -225,7 +225,7 @@ impl Module {
     fn amplitude(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let amp = redpitaya::generator::amp(channel)?;
 
-        Ok(Some(format!("{}", amp)))
+        Ok(Some(amp.to_string()))
     }
 
     fn set_offset(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
@@ -242,7 +242,7 @@ impl Module {
     fn offset(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let offset = redpitaya::generator::offset(channel)?;
 
-        Ok(Some(format!("{}", offset)))
+        Ok(Some(offset.to_string()))
     }
 
     fn set_phase(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
@@ -259,7 +259,7 @@ impl Module {
     fn phase(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let phase = redpitaya::generator::phase(channel)?;
 
-        Ok(Some(format!("{}", phase)))
+        Ok(Some(phase.to_string()))
     }
 
     fn set_duty_cycle(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
@@ -276,7 +276,7 @@ impl Module {
     fn duty_cycle(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let duty_cycle = redpitaya::generator::duty_cycle(channel)?;
 
-        Ok(Some(format!("{}", duty_cycle)))
+        Ok(Some(duty_cycle.to_string()))
     }
 
     fn set_abritrary(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
@@ -298,7 +298,7 @@ impl Module {
         let waveform = redpitaya::generator::arb_waveform(channel)?;
 
         let mut data = waveform.iter().fold(String::from("{"), |acc, v| {
-            acc + format!("{}", v).as_str() + ","
+            acc + v.to_string().as_str() + ","
         });
         data.pop();
         data.push('}');
@@ -337,7 +337,7 @@ impl Module {
     fn burst_count(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let burst_count = redpitaya::generator::burst_count(channel)?;
 
-        Ok(Some(format!("{}", burst_count)))
+        Ok(Some(burst_count.to_string()))
     }
 
     fn set_burst_repetition(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
@@ -354,7 +354,7 @@ impl Module {
     fn burst_repetition(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let burst_repetition = redpitaya::generator::burst_repetitions(channel)?;
 
-        Ok(Some(format!("{}", burst_repetition)))
+        Ok(Some(burst_repetition.to_string()))
     }
 
     fn set_burst_period(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
@@ -371,7 +371,7 @@ impl Module {
     fn burst_period(&self, channel: redpitaya::Channel, _: &[String]) -> crate::Result {
         let burst_period = redpitaya::generator::burst_period(channel)?;
 
-        Ok(Some(format!("{}", burst_period)))
+        Ok(Some(burst_period.to_string()))
     }
 
     fn set_trigger_source(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {

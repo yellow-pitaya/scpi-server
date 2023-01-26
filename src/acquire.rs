@@ -310,7 +310,7 @@ impl Module {
     fn trigger_delay(&self) -> crate::Result {
         let delay = redpitaya::acquire::trigger::delay()?;
 
-        Ok(Some(format!("{}", delay)))
+        Ok(Some(delay.to_string()))
     }
 
     fn set_trigger_delay_ns(&self, args: &[String]) -> crate::Result {
@@ -327,7 +327,7 @@ impl Module {
     fn trigger_delay_ns(&self) -> crate::Result {
         let delay = redpitaya::acquire::trigger::delay_ns()?;
 
-        Ok(Some(format!("{}", delay)))
+        Ok(Some(delay.to_string()))
     }
 
     fn set_trigger_hyst(&self, args: &[String]) -> crate::Result {
@@ -344,7 +344,7 @@ impl Module {
     fn trigger_hyst(&self) -> crate::Result {
         let hyst = redpitaya::acquire::trigger::hysteresis()?;
 
-        Ok(Some(format!("{}", hyst)))
+        Ok(Some(hyst.to_string()))
     }
 
     fn set_gain(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
@@ -382,19 +382,19 @@ impl Module {
     fn trigger_level(&self, channel: redpitaya::acquire::trigger::Channel) -> crate::Result {
         let level = redpitaya::acquire::trigger::level(channel)?;
 
-        Ok(Some(format!("{}", level)))
+        Ok(Some(level.to_string()))
     }
 
     fn wpos(&self) -> crate::Result {
         let pos = redpitaya::acquire::write_pointer()?;
 
-        Ok(Some(format!("{}", pos)))
+        Ok(Some(pos.to_string()))
     }
 
     fn tpos(&self) -> crate::Result {
         let pos = redpitaya::acquire::write_pointer_at_trig()?;
 
-        Ok(Some(format!("{}", pos)))
+        Ok(Some(pos.to_string()))
     }
 
     fn set_data_units(&mut self, args: &[String]) -> crate::Result {
@@ -482,7 +482,7 @@ impl Module {
         let mut args = args.to_vec();
         let size = redpitaya::acquire::buffer_size()?;
 
-        args.push(format!("{}", size));
+        args.push(size.to_string());
 
         self.oldest_data(channel, &args)
     }
@@ -505,7 +505,7 @@ impl Module {
     fn buffer_size(&self) -> crate::Result {
         let size = redpitaya::acquire::buffer_size()?;
 
-        Ok(Some(format!("{}", size)))
+        Ok(Some(size.to_string()))
     }
 
     fn format_data<D>(&self, data: &[D]) -> crate::Result
@@ -517,7 +517,7 @@ impl Module {
         } else {
             let s = data
                 .iter()
-                .map(|c| format!("{}", c))
+                .map(ToString::to_string)
                 .fold(String::new(), |mut acc, c| {
                     acc.push_str(c.as_str());
                     acc.push(',');

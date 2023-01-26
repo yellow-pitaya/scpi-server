@@ -71,6 +71,6 @@ impl Module {
 
         let value = redpitaya::pin::analog::value(pin)?;
 
-        Ok(Some(format!("{}", value)))
+        Ok(Some(value.to_string()))
     }
 }
