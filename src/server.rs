@@ -116,7 +116,7 @@ impl Server {
             let responses = self.handle_line(&line.unwrap());
 
             for response in responses {
-                self.write(&mut stream, &response);
+                Self::write(&mut stream, &response);
             }
         }
     }
@@ -126,7 +126,7 @@ impl Server {
 
         for message in line.split(';') {
             log::debug!("> {message:?}");
-            let (command, args) = self.parse_message(message);
+            let (command, args) = Self::parse_message(message);
             log::info!("{command:?} {args:?}");
 
             match self.execute(command, &args) {
@@ -145,7 +145,7 @@ impl Server {
         responses
     }
 
-    fn parse_message(&self, command: &str) -> (Command, Vec<String>) {
+    fn parse_message(command: &str) -> (Command, Vec<String>) {
         let args: Vec<String> = command
             .replace("\r\n", "")
             .split_whitespace()
@@ -165,7 +165,7 @@ impl Server {
         (command.into(), args)
     }
 
-    fn write(&self, stream: &mut std::net::TcpStream, response: &str) {
+    fn write(stream: &mut std::net::TcpStream, response: &str) {
         log::debug!("< {response}");
 
         stream
