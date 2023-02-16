@@ -66,9 +66,8 @@ impl Module {
     }
 
     fn fpga_bitstream(args: &[String]) -> crate::Result {
-        let version = match args.get(0) {
-            Some(version) => version,
-            None => return Err(crate::Error::MissingParameter),
+        let Some(version) = args.get(0) else {
+            return Err(crate::Error::MissingParameter);
         };
 
         let bitstream = format!("/opt/redpitaya/fpga/fpga_{version}.bit");
