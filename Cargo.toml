@@ -5,10 +5,14 @@ authors = ["Sanpi <sanpi@homecomputing.fr>"]
 edition = "2021"
 
 [dependencies]
-env_logger = "0.11"
 log = "0.4"
 redpitaya = "0.31"
 thiserror = "2.0"
+
+[dependencies.envir]
+version = "1.0"
+default-features = false
+features = ["logger"]
 
 [features]
 default = []

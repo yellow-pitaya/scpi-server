@@ -21,7 +21,7 @@ trait Module {
 }
 
 fn main() -> Result<()> {
-    env_logger::init();
+    envir::init();
 
     server::Server::launch()
 }
