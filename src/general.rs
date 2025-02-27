@@ -66,7 +66,7 @@ impl Module {
     }
 
     fn fpga_bitstream(args: &[String]) -> crate::Result {
-        let Some(version) = args.get(0) else {
+        let Some(version) = args.first() else {
             return Err(crate::Error::MissingParameter);
         };
 

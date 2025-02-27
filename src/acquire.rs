@@ -232,7 +232,7 @@ impl Module {
     }
 
     fn set_decimation(&self, args: &[String]) -> crate::Result {
-        let decimation = match args.get(0) {
+        let decimation = match args.first() {
             Some(decimation) => decimation.parse::<u32>().unwrap().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -255,7 +255,7 @@ impl Module {
     }
 
     fn set_average(&self, args: &[String]) -> crate::Result {
-        let average = match args.get(0) {
+        let average = match args.first() {
             Some(average) => average.as_str() == "ON",
             None => return Err(crate::Error::MissingParameter),
         };
@@ -276,7 +276,7 @@ impl Module {
     }
 
     fn set_trigger_source(&self, args: &[String]) -> crate::Result {
-        let source = match args.get(0) {
+        let source = match args.first() {
             Some(source) => source.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -297,7 +297,7 @@ impl Module {
     }
 
     fn set_trigger_delay(&self, args: &[String]) -> crate::Result {
-        let delay = match args.get(0) {
+        let delay = match args.first() {
             Some(delay) => delay.clone().parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -314,7 +314,7 @@ impl Module {
     }
 
     fn set_trigger_delay_ns(&self, args: &[String]) -> crate::Result {
-        let delay = match args.get(0) {
+        let delay = match args.first() {
             Some(delay) => delay.clone().parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -331,7 +331,7 @@ impl Module {
     }
 
     fn set_trigger_hyst(&self, args: &[String]) -> crate::Result {
-        let hyst = match args.get(0) {
+        let hyst = match args.first() {
             Some(hyst) => hyst.clone().parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -348,7 +348,7 @@ impl Module {
     }
 
     fn set_gain(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let gain = match args.get(0) {
+        let gain = match args.first() {
             Some(gain) => gain.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -369,7 +369,7 @@ impl Module {
         channel: redpitaya::acquire::trigger::Channel,
         args: &[String],
     ) -> crate::Result {
-        let level = match args.get(0) {
+        let level = match args.first() {
             Some(level) => level.clone().parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -398,7 +398,7 @@ impl Module {
     }
 
     fn set_data_units(&mut self, args: &[String]) -> crate::Result {
-        let unit = match args.get(0) {
+        let unit = match args.first() {
             Some(arg) => arg.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -413,7 +413,7 @@ impl Module {
     }
 
     fn set_data_format(&mut self, args: &[String]) -> crate::Result {
-        let format = match args.get(0) {
+        let format = match args.first() {
             Some(format) => format.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -424,7 +424,7 @@ impl Module {
     }
 
     fn data_pos(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let start = match args.get(0) {
+        let start = match args.first() {
             Some(start) => start.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -444,7 +444,7 @@ impl Module {
     }
 
     fn data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let start = match args.get(0) {
+        let start = match args.first() {
             Some(start) => start.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -464,7 +464,7 @@ impl Module {
     }
 
     fn oldest_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let size = match args.get(0) {
+        let size = match args.first() {
             Some(end) => end.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -488,7 +488,7 @@ impl Module {
     }
 
     fn latest_data(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let size = match args.get(0) {
+        let size = match args.first() {
             Some(end) => end.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };

@@ -54,7 +54,7 @@ impl Module {
     }
 
     fn set_pin_state(args: &[String]) -> crate::Result {
-        let pin = match args.get(0) {
+        let pin = match args.first() {
             Some(pin) => pin.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -70,7 +70,7 @@ impl Module {
     }
 
     fn pin_state(args: &[String]) -> crate::Result {
-        let pin = match args.get(0) {
+        let pin = match args.first() {
             Some(pin) => pin.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -81,7 +81,7 @@ impl Module {
     }
 
     fn set_pin_direction(args: &[String]) -> crate::Result {
-        let direction = match args.get(0) {
+        let direction = match args.first() {
             Some(direction) => direction.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -97,7 +97,7 @@ impl Module {
     }
 
     fn pin_direction(args: &[String]) -> crate::Result {
-        let pin = match args.get(0) {
+        let pin = match args.first() {
             Some(pin) => pin.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };

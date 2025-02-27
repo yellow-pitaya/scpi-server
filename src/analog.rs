@@ -48,7 +48,7 @@ impl Module {
     }
 
     fn set_pin_value(args: &[String]) -> crate::Result {
-        let pin = match args.get(0) {
+        let pin = match args.first() {
             Some(pin) => pin.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -64,7 +64,7 @@ impl Module {
     }
 
     fn pin_value(args: &[String]) -> crate::Result {
-        let pin = match args.get(0) {
+        let pin = match args.first() {
             Some(pin) => pin.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };

@@ -153,7 +153,7 @@ impl Module {
     }
 
     fn set_state(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let state = match args.get(0) {
+        let state = match args.first() {
             Some(state) => state == "ON",
             None => return Err(crate::Error::MissingParameter),
         };
@@ -178,7 +178,7 @@ impl Module {
     }
 
     fn set_frequency(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let freq = match args.get(0) {
+        let freq = match args.first() {
             Some(freq) => freq.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -195,7 +195,7 @@ impl Module {
     }
 
     fn set_function(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let function = match args.get(0) {
+        let function = match args.first() {
             Some(function) => function.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -212,7 +212,7 @@ impl Module {
     }
 
     fn set_amplitude(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let amp = match args.get(0) {
+        let amp = match args.first() {
             Some(amp) => amp.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -229,7 +229,7 @@ impl Module {
     }
 
     fn set_offset(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let offset = match args.get(0) {
+        let offset = match args.first() {
             Some(offset) => offset.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -246,7 +246,7 @@ impl Module {
     }
 
     fn set_phase(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let phase = match args.get(0) {
+        let phase = match args.first() {
             Some(phase) => phase.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -263,7 +263,7 @@ impl Module {
     }
 
     fn set_duty_cycle(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let duty_cycle = match args.get(0) {
+        let duty_cycle = match args.first() {
             Some(duty_cycle) => duty_cycle.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -307,7 +307,7 @@ impl Module {
     }
 
     fn set_mode(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let mode = match args.get(0) {
+        let mode = match args.first() {
             Some(mode) => mode.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -324,7 +324,7 @@ impl Module {
     }
 
     fn set_burst_count(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let burs_count = match args.get(0) {
+        let burs_count = match args.first() {
             Some(burs_count) => burs_count.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -341,7 +341,7 @@ impl Module {
     }
 
     fn set_burst_repetition(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let bust_repetition = match args.get(0) {
+        let bust_repetition = match args.first() {
             Some(bust_repetition) => bust_repetition.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -358,7 +358,7 @@ impl Module {
     }
 
     fn set_burst_period(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let burst_period = match args.get(0) {
+        let burst_period = match args.first() {
             Some(burst_period) => burst_period.parse().unwrap(),
             None => return Err(crate::Error::MissingParameter),
         };
@@ -375,7 +375,7 @@ impl Module {
     }
 
     fn set_trigger_source(&self, channel: redpitaya::Channel, args: &[String]) -> crate::Result {
-        let source = match args.get(0) {
+        let source = match args.first() {
             Some(source) => source.clone().into(),
             None => return Err(crate::Error::MissingParameter),
         };

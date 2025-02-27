@@ -152,7 +152,7 @@ impl Server {
             .map(ToString::to_string)
             .collect();
 
-        let command = match args.get(0) {
+        let command = match args.first() {
             Some(command) => command.to_string(),
             None => return (Command::Error("Empty command".to_string()), Vec::new()),
         };
