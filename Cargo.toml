@@ -17,6 +17,3 @@ features = ["logger"]
 [features]
 default = []
 mock = ["redpitaya/mock"]
-
-[badges]
-travis-ci = { repository = "yellow-pitaya/scpi-servere" }
